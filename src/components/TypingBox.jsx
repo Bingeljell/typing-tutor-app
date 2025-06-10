@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import exercises from '../data/exercises';
-import { calculateWPM, calculateAccuracy } from '../utils/typingutils';
+import { calculateWPM, calculateAccuracy } from '../utils/typingUtils';
 import './TypingBox.css';
 import Badge from './badge';
 
