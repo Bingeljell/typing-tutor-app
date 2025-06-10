@@ -1,16 +1,11 @@
 // src/components/TypingBox.jsx
 
 import { useState, useEffect } from 'react';
+import exercises from '../data/exercises';
+import { calculateWPM, calculateAccuracy } from '../utils/typingutils';
 import './TypingBox.css';
 
 const TypingBox = () => {
-  const exercises = [
-    'hello world this is a typing test',
-    'the quick brown fox jumps over the lazy dog',
-    'javascript is a fun programming language',
-    'practice makes perfect keep going',
-    'coding is like solving a puzzle'
-  ];
 
   const [targetText, setTargetText] = useState(
     exercises[Math.floor(Math.random() * exercises.length)]
@@ -49,24 +44,7 @@ const TypingBox = () => {
     return () => clearInterval(timer);
   }, [startTime, isComplete]);
 
-  // WPM calculation
-  const calculateWPM = () => {
-    if (elapsedTime === 0) return 0;
-    const wordsTyped = userInput.trim().split(/\s+/).length;
-    return Math.round((wordsTyped / elapsedTime) * 60);
-  };
-
-  // Accuracy calculation
-  const calculateAccuracy = () => {
-    let correct = 0;
-    for (let i = 0; i < userInput.length; i++) {
-      if (userInput[i] === targetText[i]) correct++;
-    }
-    return userInput.length > 0
-      ? Math.round((correct / userInput.length) * 100)
-      : 100;
-  };
-
+  
   const renderText = () => {
     return targetText.split('').map((char, index) => {
       let color;
@@ -114,8 +92,8 @@ const TypingBox = () => {
         style={{ width: '400px', fontSize: '18px', marginTop: '10px' }}
       />
       <div style={{ marginTop: '20px', fontSize: '18px' }}>
-        <p><strong>WPM:</strong> {calculateWPM()}</p>
-        <p><strong>Accuracy:</strong> {calculateAccuracy()}%</p>
+        <p><strong>WPM:</strong> {calculateWPM(userInput, elapsedTime)}</p>
+        <p><strong>Accuracy:</strong> {calculateAccuracy(userInput, targetText)}%</p>
         <p><strong>Time Elapsed:</strong> {Math.floor(elapsedTime)}s</p>
       </div>
 
