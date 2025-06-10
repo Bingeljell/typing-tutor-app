@@ -24,7 +24,7 @@ const TypingBox = () => {
     }
 
     // Check for completion
-    if (value === targetText) {
+    if (value.length >= targetText.length) {
       setIsComplete(true);
     }
 
@@ -47,20 +47,18 @@ const TypingBox = () => {
   
   const renderText = () => {
     return targetText.split('').map((char, index) => {
-      let color;
-      if (index < userInput.length) {
-        color = char === userInput[index] ? 'green' : 'red';
-      } else {
-        color = 'black';
-      }
-
-      return (
-        <span key={index} style={{ color }}>
-          {char}
-        </span>
-      );
-    });
-  };
+        let className = '';
+        if (index < userInput.length) {
+          className = char === userInput[index] ? 'correct' : 'incorrect';
+        }
+      
+        return (
+          <span key={index} className={className}>
+            {char}
+          </span>
+        );
+      });
+    };
 
   // Restart current exercise
   const handleRestart = () => {
@@ -103,6 +101,18 @@ const TypingBox = () => {
         </button>
         <button onClick={handleNextExercise}>Next Exercise</button>
       </div>
+      {isComplete && (
+      <div
+        style={{
+          fontSize: '32px',
+          marginTop: '20px',
+          color: 'gold',
+          animation: 'pop 0.5s ease-out forwards'
+        }}
+      >
+        🎉 Exercise Complete!
+      </div>
+    )}
     </div>
   );
 };
