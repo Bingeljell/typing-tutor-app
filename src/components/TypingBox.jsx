@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import exercises from '../data/exercises';
 import { calculateWPM, calculateAccuracy } from '../utils/typingUtils';
 import './TypingBox.css';
-import Badge from './badge';
+import Badge from './Badge';
 
 const TypingBox = () => {
 
