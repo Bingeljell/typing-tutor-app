@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import exercises from '../data/exercises';
 import { calculateWPM, calculateAccuracy } from '../utils/typingutils';
 import './TypingBox.css';
+import Badge from './badge';
 
 const TypingBox = () => {
 
@@ -15,6 +16,7 @@ const TypingBox = () => {
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [exerciseCount, setExerciseCount] = useState(0);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -76,6 +78,7 @@ const TypingBox = () => {
     setStartTime(null);
     setElapsedTime(0);
     setIsComplete(false);
+    setExerciseCount(prev => prev + 1);
   };
 
   return (
@@ -93,8 +96,9 @@ const TypingBox = () => {
         <p><strong>WPM:</strong> {calculateWPM(userInput, elapsedTime)}</p>
         <p><strong>Accuracy:</strong> {calculateAccuracy(userInput, targetText)}%</p>
         <p><strong>Time Elapsed:</strong> {Math.floor(elapsedTime)}s</p>
+        <p><strong>Exercises Completed:</strong> {exerciseCount}</p>
       </div>
-
+      {isComplete && <Badge accuracy={calculateAccuracy()} />}
       <div style={{ marginTop: '20px' }}>
         <button onClick={handleRestart} style={{ marginRight: '10px' }}>
           Restart

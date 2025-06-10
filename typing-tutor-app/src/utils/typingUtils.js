@@ -7,8 +7,8 @@ export const calculateWPM = (userInput, elapsedTime) => {
 };
 
 export const calculateAccuracy = (userInput, targetText) => {
-    const targetWords = targetText.trim().split(/\s+/);
-    const inputWords = userInput.trim().split(/\s+/);
+    const targetWords = (targetText || '').trim().split(/\s+/);
+    const inputWords = (userInput || '').trim().split(/\s+/);
   
     let correct = 0;
     for (let i = 0; i < inputWords.length; i++) {
