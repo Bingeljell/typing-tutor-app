@@ -1,10 +1,12 @@
 // src/components/TypingBox.jsx
 
 import { useState, useEffect } from 'react';
-import exercises from '../data/exercises';
 import { calculateWPM, calculateAccuracy } from '../utils/typingUtils';
 import './TypingBox.css';
 import Badge from './Badge';
+import kidsExercises from '../data/exercises_kids';
+import classicsExercises from '../data/exercises_classics';
+
 
 const TypingBox = () => {
   const [userInput, setUserInput] = useState('');
@@ -13,9 +15,25 @@ const TypingBox = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [exerciseCount, setExerciseCount] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(1);
+  const [currentPart, setCurrentPart] = useState(1);
 
-  const targetExercise = exercises.find((ex) => ex.level === currentLevel);
+  const [mode, setMode] = useState('kids'); // 'kids' or 'classics'
+  const exercises = mode === 'kids' ? kidsExercises : classicsExercises;
+
+
+
+  const targetExercise = exercises.find(
+    (ex) => ex.level === currentLevel && ex.part === currentPart);
   const targetText = targetExercise ? targetExercise.text : '';
+  
+
+  const accuracy = calculateAccuracy(userInput, targetText);
+
+  const progressColor = accuracy >= 95
+    ? '#4caf50'   // Green
+    : accuracy >= 75
+    ? '#ffeb3b'   // Yellow
+    : '#f44336';  // Red
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -70,17 +88,75 @@ const TypingBox = () => {
 
   const handleNextExercise = () => {
     console.log('Next exercise clicked');
-    setCurrentLevel((prev) => (prev < exercises.length ? prev + 1 : 1));
+  
+    const maxPart = Math.max(...exercises
+      .filter(ex => ex.level === currentLevel)
+      .map(ex => ex.part));
+  
+    if (currentPart < maxPart) {
+      setCurrentPart(prev => prev + 1);
+    } else {
+      // Move to next level
+      setCurrentLevel((prev) => (prev < exercises.length ? prev + 1 : 1));
+      setCurrentPart(1); // Reset part
+    }
+  
     setUserInput('');
     setStartTime(null);
     setElapsedTime(0);
     setIsComplete(false);
-    setExerciseCount((prev) => prev + 1);
+    setExerciseCount(prev => prev + 1);
   };
+  
 
   return (
-    <div>
+    <div style={{
+      padding: '20px',
+      maxWidth: '600px',
+      margin: '40px auto',
+      textAlign: 'center',
+      backgroundColor: 'rgba(197, 197, 197, 0.7)',
+      borderRadius: '12px',
+      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+      fontFamily: '"Comic Sans MS", cursive, sans-serif'  // fun for kids; can switch in themes later
+    }}>
       <h2>Typing Practice</h2>
+      <div style={{ marginTop: '20px' }}>
+        <button onClick={() => setMode('kids')} 
+        style={{
+          marginRight: '10px',
+          fontWeight: mode === 'kids' ? 'bold' : 'normal',
+          backgroundColor: mode === 'kids' ? '#9bf013' : '#223306'
+           }}>
+          Kids Mode
+        </button>
+        <button onClick={() => setMode('classics')} 
+        style={{
+          marginRight: '10px',
+          fontWeight: mode === 'classics' ? 'bold' : 'normal',
+          backgroundColor: mode === 'classics' ? '#9bf013' : '#223306'
+           }}>
+          Classics Mode
+        </button>
+      </div>
+
+      {/* Progress Bar */}
+      <div style={{
+            height: '20px',
+            width: '100%',
+            backgroundColor: '#e0e0e0',
+            borderRadius: '10px',
+            overflow: 'hidden',
+            marginTop: '20px'
+          }}>
+            <div style={{
+              height: '100%',
+              width: `${Math.min((userInput.length / targetText.length) * 100, 100)}%`,
+              
+              backgroundColor: progressColor,
+              transition: 'width 0.3s ease'
+            }} />
+          </div>
       <p style={{ fontSize: '24px', letterSpacing: '2px' }}>{renderText()}</p>
       <input
         type="text"
@@ -95,6 +171,9 @@ const TypingBox = () => {
         <p><strong>Time Elapsed:</strong> {Math.floor(elapsedTime)}s</p>
         <p><strong>Exercises Completed:</strong> {exerciseCount}</p>
         <p><strong>Current Level:</strong> {currentLevel}</p>
+        <p><strong>Current Part:</strong> {currentPart}</p> 
+        
+
       </div>
 
       {/* Badge → correct prop usage */}
@@ -117,8 +196,19 @@ const TypingBox = () => {
           }}
         >
           🎉 Exercise Complete!
-        </div>
+        </div>        
       )}
+      {isComplete && targetExercise && targetExercise.factoid && (
+      <div style={{
+        marginTop: '10px',
+        fontStyle: 'italic',
+        color: '#555',
+        fontSize: '16px'
+      }}>
+        Fun fact: {targetExercise.factoid}
+      </div>
+    )}
+
     </div>
   );
 };

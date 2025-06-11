@@ -24,4 +24,18 @@ input {
       opacity: 1;
     }
   }
-    
+  .correct {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .incorrect {
+    color: red;
+    font-weight: bold;
+  }
+  
+  span {
+    margin-right: 2px;  /* spacing between letters */
+    font-size: 28px;
+  }
+  
