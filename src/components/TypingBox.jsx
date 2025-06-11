@@ -1,12 +1,11 @@
 // src/components/TypingBox.jsx
 
 import { useState, useEffect } from 'react';
+import exercises_kids from '../data/exercises_kids';
+import exercises_classics from '../data/exercises_classics';
 import { calculateWPM, calculateAccuracy } from '../utils/typingUtils';
 import './TypingBox.css';
 import Badge from './Badge';
-import kidsExercises from '../data/exercises_kids';
-import classicsExercises from '../data/exercises_classics';
-
 
 const TypingBox = () => {
   const [userInput, setUserInput] = useState('');
@@ -16,24 +15,27 @@ const TypingBox = () => {
   const [exerciseCount, setExerciseCount] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [currentPart, setCurrentPart] = useState(1);
-
   const [mode, setMode] = useState('kids'); // 'kids' or 'classics'
-  const exercises = mode === 'kids' ? kidsExercises : classicsExercises;
 
-
+  const exercises = mode === 'kids' ? exercises_kids : exercises_classics;
+  const partsInCurrentLevel = exercises.filter(ex => ex.level === currentLevel).length;
+  const progressPercent = Math.min((currentPart / partsInCurrentLevel) * 100, 100);
 
   const targetExercise = exercises.find(
-    (ex) => ex.level === currentLevel && ex.part === currentPart);
-  const targetText = targetExercise ? targetExercise.text : '';
-  
+    (ex) => ex.level === currentLevel && ex.part === currentPart
+  );
 
+  const targetText = targetExercise ? targetExercise.text : '';
   const accuracy = calculateAccuracy(userInput, targetText);
+  const sentenceProgressPercent = targetText.length > 0
+  ? Math.min((userInput.length / targetText.length) * 100, 100)
+  : 0;
 
   const progressColor = accuracy >= 95
-    ? '#4caf50'   // Green
+    ? '#4caf50'
     : accuracy >= 75
-    ? '#ffeb3b'   // Yellow
-    : '#f44336';  // Red
+    ? '#ffeb3b'
+    : '#f44336';
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -42,7 +44,6 @@ const TypingBox = () => {
       setStartTime(Date.now());
     }
 
-    // Check for completion → safe pattern
     if (!isComplete && value.length >= targetText.length) {
       setIsComplete(true);
     }
@@ -50,14 +51,12 @@ const TypingBox = () => {
     setUserInput(value);
   };
 
-  // Timer effect
   useEffect(() => {
     let timer = null;
-    console.log('isComplete changed:', isComplete);
 
     if (startTime && !isComplete) {
       timer = setInterval(() => {
-        setElapsedTime((Date.now() - startTime) / 1000); // in seconds
+        setElapsedTime((Date.now() - startTime) / 1000);
       }, 1000);
     }
 
@@ -88,97 +87,122 @@ const TypingBox = () => {
 
   const handleNextExercise = () => {
     console.log('Next exercise clicked');
-  
-    const maxPart = Math.max(...exercises
-      .filter(ex => ex.level === currentLevel)
-      .map(ex => ex.part));
-  
+
+    const maxPart = partsInCurrentLevel;
+
     if (currentPart < maxPart) {
       setCurrentPart(prev => prev + 1);
     } else {
-      // Move to next level
-      setCurrentLevel((prev) => (prev < exercises.length ? prev + 1 : 1));
-      setCurrentPart(1); // Reset part
+      const maxLevel = Math.max(...exercises.map(ex => ex.level));
+      setCurrentLevel(prevLevel => (prevLevel < maxLevel ? prevLevel + 1 : 1));
+      setCurrentPart(1);
     }
-  
+
     setUserInput('');
     setStartTime(null);
     setElapsedTime(0);
     setIsComplete(false);
     setExerciseCount(prev => prev + 1);
   };
-  
 
   return (
     <div style={{
       padding: '20px',
-      maxWidth: '600px',
+      maxWidth: '700px',
       margin: '40px auto',
       textAlign: 'center',
-      backgroundColor: 'rgba(197, 197, 197, 0.7)',
+      backgroundColor: '#828285',
       borderRadius: '12px',
       boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-      fontFamily: '"Comic Sans MS", cursive, sans-serif'  // fun for kids; can switch in themes later
+      fontFamily: '"Comic Sans MS", cursive, sans-serif'
     }}>
       <h2>Typing Practice</h2>
+
+      {/* Mode Switch */}
       <div style={{ marginTop: '20px' }}>
-        <button onClick={() => setMode('kids')} 
-        style={{
-          marginRight: '10px',
-          fontWeight: mode === 'kids' ? 'bold' : 'normal',
-          backgroundColor: mode === 'kids' ? '#9bf013' : '#223306'
-           }}>
+        <button onClick={() => setMode('kids')}
+          style={{
+            marginRight: '10px',
+            fontWeight: mode === 'kids' ? 'bold' : 'normal',
+            backgroundColor: mode === 'kids' ? '#9bf013' : '#223306',
+            color: mode === 'kids' ? '#000' : '#fff',
+            padding: '8px 12px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}>
           Kids Mode
         </button>
-        <button onClick={() => setMode('classics')} 
-        style={{
-          marginRight: '10px',
-          fontWeight: mode === 'classics' ? 'bold' : 'normal',
-          backgroundColor: mode === 'classics' ? '#9bf013' : '#223306'
-           }}>
+        <button onClick={() => setMode('classics')}
+          style={{
+            marginRight: '10px',
+            fontWeight: mode === 'classics' ? 'bold' : 'normal',
+            backgroundColor: mode === 'classics' ? '#9bf013' : '#223306',
+            color: mode === 'classics' ? '#000' : '#fff',
+            padding: '8px 12px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}>
           Classics Mode
         </button>
       </div>
 
       {/* Progress Bar */}
       <div style={{
-            height: '20px',
-            width: '100%',
-            backgroundColor: '#e0e0e0',
-            borderRadius: '10px',
-            overflow: 'hidden',
-            marginTop: '20px'
-          }}>
-            <div style={{
-              height: '100%',
-              width: `${Math.min((userInput.length / targetText.length) * 100, 100)}%`,
-              
-              backgroundColor: progressColor,
-              transition: 'width 0.3s ease'
-            }} />
-          </div>
-      <p style={{ fontSize: '24px', letterSpacing: '2px' }}>{renderText()}</p>
+        height: '10px',
+        width: '100%',
+        backgroundColor: '#e0e0e0',
+        borderRadius: '5px',
+        overflow: 'hidden',
+        marginTop: '10px'
+      }}>
+        <div style={{
+          height: '100%',
+          width: `${sentenceProgressPercent}%`,
+          backgroundColor: progressColor,
+          transition: 'width 0.3s ease'
+        }} />
+      </div>
+
+      {/* Typing Text */}
+      <p
+        className="typing-text"
+        style={{ fontSize: '24px', letterSpacing: '2px' }}
+      >
+        {renderText()}
+      </p>
+
       <input
         type="text"
         value={userInput}
         onChange={handleInputChange}
         disabled={isComplete}
-        style={{ width: '400px', fontSize: '18px', marginTop: '10px' }}
+        style={{
+          width: '400px',
+          fontSize: '18px',
+          marginTop: '10px',
+          padding: '8px',
+          borderRadius: '5px',
+          border: '1px solid #ccc'
+        }}
       />
+
+      {/* Stats */}
       <div style={{ marginTop: '20px', fontSize: '18px' }}>
         <p><strong>WPM:</strong> {calculateWPM(userInput, elapsedTime)}</p>
-        <p><strong>Accuracy:</strong> {calculateAccuracy(userInput, targetText)}%</p>
+        <p><strong>Accuracy:</strong> {accuracy}%</p>
         <p><strong>Time Elapsed:</strong> {Math.floor(elapsedTime)}s</p>
         <p><strong>Exercises Completed:</strong> {exerciseCount}</p>
         <p><strong>Current Level:</strong> {currentLevel}</p>
-        <p><strong>Current Part:</strong> {currentPart}</p> 
-        
-
+        <p><strong>Current Part:</strong> {currentPart} / {partsInCurrentLevel}</p>
+        <p><strong>Progress:</strong> {Math.round(progressPercent)}%</p>
       </div>
 
-      {/* Badge → correct prop usage */}
-      {isComplete && <Badge accuracy={calculateAccuracy(userInput, targetText)} />}
+      {/* Badge */}
+      {isComplete && <Badge accuracy={accuracy} />}
 
+      {/* Buttons */}
       <div style={{ marginTop: '20px' }}>
         <button onClick={handleRestart} style={{ marginRight: '10px' }}>
           Restart
@@ -186,29 +210,29 @@ const TypingBox = () => {
         <button onClick={handleNextExercise}>Next Exercise</button>
       </div>
 
+      {/* Victory Message + Factoid */}
       {isComplete && (
-        <div
-          style={{
+        <div>
+          <div style={{
             fontSize: '32px',
             marginTop: '20px',
             color: 'gold',
-            animation: 'pop 0.5s ease-out forwards',
-          }}
-        >
-          🎉 Exercise Complete!
-        </div>        
+            animation: 'pop 0.5s ease-out forwards'
+          }}>
+            🎉 Exercise Complete!
+          </div>
+          {targetExercise && targetExercise.factoid && (
+            <div style={{
+              marginTop: '10px',
+              fontStyle: 'italic',
+              color: '#555',
+              fontSize: '16px'
+            }}>
+              Fun fact: {targetExercise.factoid}
+            </div>
+          )}
+        </div>
       )}
-      {isComplete && targetExercise && targetExercise.factoid && (
-      <div style={{
-        marginTop: '10px',
-        fontStyle: 'italic',
-        color: '#555',
-        fontSize: '16px'
-      }}>
-        Fun fact: {targetExercise.factoid}
-      </div>
-    )}
-
     </div>
   );
 };
