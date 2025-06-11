@@ -7,16 +7,15 @@ import './TypingBox.css';
 import Badge from './Badge';
 
 const TypingBox = () => {
-
-  const [targetText, setTargetText] = useState(
-    exercises[Math.floor(Math.random() * exercises.length)]
-  );
-
   const [userInput, setUserInput] = useState('');
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [exerciseCount, setExerciseCount] = useState(0);
+  const [currentLevel, setCurrentLevel] = useState(1);
+
+  const targetExercise = exercises.find((ex) => ex.level === currentLevel);
+  const targetText = targetExercise ? targetExercise.text : '';
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -25,8 +24,8 @@ const TypingBox = () => {
       setStartTime(Date.now());
     }
 
-    // Check for completion
-    if (value.length >= targetText.length) {
+    // Check for completion → safe pattern
+    if (!isComplete && value.length >= targetText.length) {
       setIsComplete(true);
     }
 
@@ -36,6 +35,7 @@ const TypingBox = () => {
   // Timer effect
   useEffect(() => {
     let timer = null;
+    console.log('isComplete changed:', isComplete);
 
     if (startTime && !isComplete) {
       timer = setInterval(() => {
@@ -46,23 +46,21 @@ const TypingBox = () => {
     return () => clearInterval(timer);
   }, [startTime, isComplete]);
 
-  
   const renderText = () => {
     return targetText.split('').map((char, index) => {
-        let className = '';
-        if (index < userInput.length) {
-          className = char === userInput[index] ? 'correct' : 'incorrect';
-        }
-      
-        return (
-          <span key={index} className={className}>
-            {char}
-          </span>
-        );
-      });
-    };
+      let className = '';
+      if (index < userInput.length) {
+        className = char === userInput[index] ? 'correct' : 'incorrect';
+      }
 
-  // Restart current exercise
+      return (
+        <span key={index} className={className}>
+          {char}
+        </span>
+      );
+    });
+  };
+
   const handleRestart = () => {
     setUserInput('');
     setStartTime(null);
@@ -70,15 +68,14 @@ const TypingBox = () => {
     setIsComplete(false);
   };
 
-  // Load next exercise
   const handleNextExercise = () => {
-    const newText = exercises[Math.floor(Math.random() * exercises.length)];
-    setTargetText(newText);
+    console.log('Next exercise clicked');
+    setCurrentLevel((prev) => (prev < exercises.length ? prev + 1 : 1));
     setUserInput('');
     setStartTime(null);
     setElapsedTime(0);
     setIsComplete(false);
-    setExerciseCount(prev => prev + 1);
+    setExerciseCount((prev) => prev + 1);
   };
 
   return (
@@ -97,26 +94,31 @@ const TypingBox = () => {
         <p><strong>Accuracy:</strong> {calculateAccuracy(userInput, targetText)}%</p>
         <p><strong>Time Elapsed:</strong> {Math.floor(elapsedTime)}s</p>
         <p><strong>Exercises Completed:</strong> {exerciseCount}</p>
+        <p><strong>Current Level:</strong> {currentLevel}</p>
       </div>
-      {isComplete && <Badge accuracy={calculateAccuracy()} />}
+
+      {/* Badge → correct prop usage */}
+      {isComplete && <Badge accuracy={calculateAccuracy(userInput, targetText)} />}
+
       <div style={{ marginTop: '20px' }}>
         <button onClick={handleRestart} style={{ marginRight: '10px' }}>
           Restart
         </button>
         <button onClick={handleNextExercise}>Next Exercise</button>
       </div>
+
       {isComplete && (
-      <div
-        style={{
-          fontSize: '32px',
-          marginTop: '20px',
-          color: 'gold',
-          animation: 'pop 0.5s ease-out forwards'
-        }}
-      >
-        🎉 Exercise Complete!
-      </div>
-    )}
+        <div
+          style={{
+            fontSize: '32px',
+            marginTop: '20px',
+            color: 'gold',
+            animation: 'pop 0.5s ease-out forwards',
+          }}
+        >
+          🎉 Exercise Complete!
+        </div>
+      )}
     </div>
   );
 };

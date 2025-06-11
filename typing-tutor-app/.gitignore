@@ -3,22 +3,40 @@ logs
 *.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependency directories
+node_modules/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Build output
+dist/
+dist-ssr/
+out/
+
+# Local env files (optional — highly recommended if you use API keys later)
+.env
+.env.*
+
+# IDE / Editor files
+.vscode/
+!.vscode/extensions.json  # Optionally allow shared extensions
+.idea/
 .DS_Store
+
+# OS-specific junk files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Misc
+*.local
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Mac junk
+.AppleDouble
+.LSOverride
