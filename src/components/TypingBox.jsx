@@ -172,7 +172,24 @@ const TypingBox = () => {
       >
         {renderText()}
       </p>
-
+      {/* Factoid */}
+      {isComplete && targetExercise && targetExercise.factoid && (
+                <div style={{
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  padding: '15px',
+                  backgroundColor: '#fff9c4',
+                  borderRadius: '8px',
+                  border: '2px dashed #fbc02d',
+                  fontSize: '18px',
+                  color: '#333',
+                  fontWeight: 'bold',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                  animation: 'fadeSlideIn 0.6s ease-out forwards'
+                }}>
+                  🌟 Fun Fact: {targetExercise.factoid}
+                </div>
+              )}
       <input
         type="text"
         value={userInput}
@@ -189,15 +206,35 @@ const TypingBox = () => {
       />
 
       {/* Stats */}
-      <div style={{ marginTop: '20px', fontSize: '18px' }}>
-        <p><strong>WPM:</strong> {calculateWPM(userInput, elapsedTime)}</p>
-        <p><strong>Accuracy:</strong> {accuracy}%</p>
-        <p><strong>Time Elapsed:</strong> {Math.floor(elapsedTime)}s</p>
-        <p><strong>Exercises Completed:</strong> {exerciseCount}</p>
-        <p><strong>Current Level:</strong> {currentLevel}</p>
-        <p><strong>Current Part:</strong> {currentPart} / {partsInCurrentLevel}</p>
-        <p><strong>Progress:</strong> {Math.round(progressPercent)}%</p>
-      </div>
+      <div style={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: '15px',
+  marginTop: '40px'
+}}>
+  {[
+    { label: 'WPM', value: calculateWPM(userInput, elapsedTime) },
+    { label: 'Accuracy', value: `${accuracy}%` },
+    { label: 'Time Elapsed', value: `${Math.floor(elapsedTime)}s` },
+    { label: 'Exercises Completed', value: exerciseCount },
+    { label: 'Level', value: currentLevel },
+    { label: 'Part', value: `${currentPart} / ${partsInCurrentLevel}` },
+    { label: 'Progress', value: `${Math.round(progressPercent)}%` }
+  ].map((stat, index) => (
+    <div key={index} style={{
+      backgroundColor: '#fff',
+      borderRadius: '8px',
+      padding: '12px 16px',
+      minWidth: '120px',
+      textAlign: 'center',
+      boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+    }}>
+      <div style={{ fontSize: '14px', color: '#666' }}>{stat.label}</div>
+      <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333' }}>{stat.value}</div>
+    </div>
+  ))}
+</div>
 
       {/* Badge */}
       {isComplete && <Badge accuracy={accuracy} />}
@@ -207,10 +244,26 @@ const TypingBox = () => {
         <button onClick={handleRestart} style={{ marginRight: '10px' }}>
           Restart
         </button>
-        <button onClick={handleNextExercise}>Next Exercise</button>
+        <button 
+          onClick={handleNextExercise}
+          disabled={!isComplete}
+          style={{
+            marginRight: '10px',
+            fontWeight: 'bold',
+            backgroundColor: '#9bf013',
+            color: '#000',
+            padding: '8px 12px',
+            border: 'none',
+            borderRadius: '5px',  
+            opacity: isComplete ? 1 : 0.5,
+            cursor: isComplete ? 'pointer' : 'not-allowed'
+          }}
+        >
+          Next Exercise
+        </button>
       </div>
 
-      {/* Victory Message + Factoid */}
+      {/* Victory Message */}
       {isComplete && (
         <div>
           <div style={{
@@ -220,17 +273,7 @@ const TypingBox = () => {
             animation: 'pop 0.5s ease-out forwards'
           }}>
             🎉 Exercise Complete!
-          </div>
-          {targetExercise && targetExercise.factoid && (
-            <div style={{
-              marginTop: '10px',
-              fontStyle: 'italic',
-              color: '#555',
-              fontSize: '16px'
-            }}>
-              Fun fact: {targetExercise.factoid}
-            </div>
-          )}
+          </div> 
         </div>
       )}
     </div>
