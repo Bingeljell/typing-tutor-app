@@ -36,6 +36,7 @@ const TypingBox = () => {
     : accuracy >= 75
     ? '#ffeb3b'
     : '#f44336';
+  const [fadeOutFactoid, setFadeOutFactoid] = useState(false);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -86,23 +87,31 @@ const TypingBox = () => {
   };
 
   const handleNextExercise = () => {
-    console.log('Next exercise clicked');
-
-    const maxPart = partsInCurrentLevel;
-
-    if (currentPart < maxPart) {
-      setCurrentPart(prev => prev + 1);
-    } else {
-      const maxLevel = Math.max(...exercises.map(ex => ex.level));
-      setCurrentLevel(prevLevel => (prevLevel < maxLevel ? prevLevel + 1 : 1));
-      setCurrentPart(1);
-    }
-
-    setUserInput('');
-    setStartTime(null);
-    setElapsedTime(0);
-    setIsComplete(false);
-    setExerciseCount(prev => prev + 1);
+    // Trigger fade-out first
+    setFadeOutFactoid(true);
+  
+    // Wait 500ms → then run your original logic:
+    setTimeout(() => {
+      const maxPart = partsInCurrentLevel;
+  
+      if (currentPart < maxPart) {
+        setCurrentPart(prev => prev + 1);
+      } else {
+        const maxLevel = Math.max(...exercises.map(ex => ex.level));
+        setCurrentLevel(prevLevel => (prevLevel < maxLevel ? prevLevel + 1 : 1));
+        setCurrentPart(1);
+      }
+  
+      // Reset typing box states
+      setUserInput('');
+      setStartTime(null);
+      setElapsedTime(0);
+      setIsComplete(false);
+      setExerciseCount(prev => prev + 1);
+  
+      // Reset fadeOut state so next factoid animates in fresh
+      setFadeOutFactoid(false);
+    }, 500); // match fadeOut animation duration
   };
 
   return (
@@ -174,22 +183,23 @@ const TypingBox = () => {
       </p>
       {/* Factoid */}
       {isComplete && targetExercise && targetExercise.factoid && (
-                <div style={{
-                  marginTop: '20px',
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#fff9c4',
-                  borderRadius: '8px',
-                  border: '2px dashed #fbc02d',
-                  fontSize: '18px',
-                  color: '#333',
-                  fontWeight: 'bold',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                  animation: 'fadeSlideIn 0.6s ease-out forwards'
-                }}>
-                  🌟 Fun Fact: {targetExercise.factoid}
-                </div>
-              )}
+        <div style={{
+          marginTop: '12px',
+          padding: '15px',
+          backgroundColor: '#fff9c4',
+          borderRadius: '8px',
+          border: '2px dashed #fbc02d',
+          fontSize: '18px',
+          color: '#333',
+          fontWeight: 'bold',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+          animation: fadeOutFactoid
+            ? 'fadeOut 0.5s ease-out forwards'
+            : 'fadeSlideIn 0.6s ease-out forwards, pulse 2s ease-in-out 0.8s 3'
+        }}>
+          🌟 Fun Fact: {targetExercise.factoid}
+        </div>
+      )}
       <input
         type="text"
         value={userInput}
@@ -210,7 +220,7 @@ const TypingBox = () => {
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
-  gap: '15px',
+  gap: '5px',
   marginTop: '40px'
 }}>
   {[
@@ -225,10 +235,10 @@ const TypingBox = () => {
     <div key={index} style={{
       backgroundColor: '#fff',
       borderRadius: '8px',
-      padding: '12px 16px',
-      minWidth: '120px',
+      padding: '5px 7px',
+      minWidth: '100px',
       textAlign: 'center',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+      boxShadow: '0 2px 6px rgba(255, 221, 0, 0.99)'
     }}>
       <div style={{ fontSize: '14px', color: '#666' }}>{stat.label}</div>
       <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333' }}>{stat.value}</div>
