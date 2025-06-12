@@ -1,11 +1,12 @@
 // src/components/TypingBox.jsx
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import exercises_kids from '../data/exercises_kids';
 import exercises_classics from '../data/exercises_classics';
 import { calculateWPM, calculateAccuracy } from '../utils/typingUtils';
 import './TypingBox.css';
 import Badge from './Badge';
+
 
 const TypingBox = () => {
   const [userInput, setUserInput] = useState('');
@@ -37,6 +38,9 @@ const TypingBox = () => {
     ? '#ffeb3b'
     : '#f44336';
   const [fadeOutFactoid, setFadeOutFactoid] = useState(false);
+  
+  const inputRef = useRef();
+
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -63,6 +67,13 @@ const TypingBox = () => {
 
     return () => clearInterval(timer);
   }, [startTime, isComplete]);
+
+  useEffect(() => {
+    if (!isComplete) {
+      inputRef.current?.focus();
+    }
+  }, [currentPart, currentLevel, isComplete]);
+
 
   const renderText = () => {
     return targetText.split('').map((char, index) => {
@@ -114,18 +125,25 @@ const TypingBox = () => {
     }, 500); // match fadeOut animation duration
   };
 
+  
   return (
+    
     <div style={{
-      padding: '20px',
+      padding: '10px',
       maxWidth: '700px',
-      margin: '40px auto',
+      margin: '10px auto',
       textAlign: 'center',
       backgroundColor: '#828285',
       borderRadius: '12px',
       boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-      fontFamily: '"Comic Sans MS", cursive, sans-serif'
+      fontFamily: 'Merriweather'
     }}>
-      <h2>Typing Practice</h2>
+      <h2 style ={{
+        fontSize: '42px',
+        fontFamily: 'Playfair Display',
+        color: '#fefefe', /* rich brown */  
+        textShadow: '1px 1px 3px rgba(35, 35, 35, 0.61)'
+      }}>Educate yourself as you learn to type</h2>
 
       {/* Mode Switch */}
       <div style={{ marginTop: '20px' }}>
@@ -169,18 +187,27 @@ const TypingBox = () => {
         <div style={{
           height: '100%',
           width: `${sentenceProgressPercent}%`,
-          backgroundColor: progressColor,
+          background: 'linear-gradient(to right, #ff8a65, #ffd54f)',
           transition: 'width 0.3s ease'
         }} />
       </div>
 
       {/* Typing Text */}
-      <p
-        className="typing-text"
-        style={{ fontSize: '24px', letterSpacing: '2px' }}
-      >
-        {renderText()}
-      </p>
+      <p className="typing-text" style={{
+        fontSize: '28px',
+        letterSpacing: '1.5px',
+        backgroundColor: '#fefefe',
+        color: '#333',
+        padding: '12px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+        border: '1px solid #ccc',
+        maxWidth: '600px',
+        margin: '20px auto',
+        fontFamily: 'Source Code Pro'  // important! monospaced font improves typing clarity
+      }}>
+  {renderText()}
+</p>
       {/* Factoid */}
       {isComplete && targetExercise && targetExercise.factoid && (
         <div style={{
@@ -201,6 +228,7 @@ const TypingBox = () => {
         </div>
       )}
       <input
+        ref={inputRef}
         type="text"
         value={userInput}
         onChange={handleInputChange}
@@ -210,41 +238,44 @@ const TypingBox = () => {
           fontSize: '18px',
           marginTop: '10px',
           padding: '8px',
+          color: '#333',
           borderRadius: '5px',
-          border: '1px solid #ccc'
+          border: '2px solid #ffd54f',
+          background: 'linear-gradient(to bottom, #fffbe6, #fff2cc)'
         }}
       />
 
       {/* Stats */}
       <div style={{
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  gap: '5px',
-  marginTop: '40px'
-}}>
-  {[
-    { label: 'WPM', value: calculateWPM(userInput, elapsedTime) },
-    { label: 'Accuracy', value: `${accuracy}%` },
-    { label: 'Time Elapsed', value: `${Math.floor(elapsedTime)}s` },
-    { label: 'Exercises Completed', value: exerciseCount },
-    { label: 'Level', value: currentLevel },
-    { label: 'Part', value: `${currentPart} / ${partsInCurrentLevel}` },
-    { label: 'Progress', value: `${Math.round(progressPercent)}%` }
-  ].map((stat, index) => (
-    <div key={index} style={{
-      backgroundColor: '#fff',
-      borderRadius: '8px',
-      padding: '5px 7px',
-      minWidth: '100px',
-      textAlign: 'center',
-      boxShadow: '0 2px 6px rgba(255, 221, 0, 0.99)'
-    }}>
-      <div style={{ fontSize: '14px', color: '#666' }}>{stat.label}</div>
-      <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333' }}>{stat.value}</div>
-    </div>
-  ))}
-</div>
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: '5px',
+        marginTop: '40px',
+        fontFamily: 'Inter'
+      }}>
+        {[
+          { label: 'WPM', value: calculateWPM(userInput, elapsedTime) },
+          { label: 'Accuracy', value: `${accuracy}%` },
+          { label: 'Time Elapsed', value: `${Math.floor(elapsedTime)}s` },
+          { label: 'Exercises Completed', value: exerciseCount },
+          { label: 'Level', value: currentLevel },
+          { label: 'Part', value: `${currentPart} / ${partsInCurrentLevel}` },
+          { label: 'Progress', value: `${Math.round(progressPercent)}%` }
+        ].map((stat, index) => (
+          <div key={index} style={{
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            padding: '5px 7px',
+            minWidth: '100px',
+            textAlign: 'center',
+            boxShadow: '0 2px 6px rgba(255, 221, 0, 0.99)'
+          }}>
+            <div style={{ fontSize: '14px', color: '#666' }}>{stat.label}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333' }}>{stat.value}</div>
+          </div>
+        ))}
+      </div>
 
       {/* Badge */}
       {isComplete && <Badge accuracy={accuracy} />}

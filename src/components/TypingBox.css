@@ -1,3 +1,6 @@
+body {
+  background: radial-gradient(circle at top left, #efde96, #eeafc4);
+}
 input {
     padding: 10px;
     border-radius: 5px;

@@ -5,8 +5,8 @@ import TypingBox from './components/TypingBox';
 
 function App() {
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1>Typing Tutor App</h1>
+    <div style={{ marginTop: '20px', textAlign: 'center' }}>
+      <h1>GutenKeys Typing Tutor</h1>
       <TypingBox />
     </div>
   );
