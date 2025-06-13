@@ -149,6 +149,7 @@ const TypingBox = () => {
     
     <div className="typing-box-container">
       <h2 className="typing-box-title">Culture yourself as you learn to type</h2>
+      <p className="instructions">Select a mode below to get started</p>
 
       {/* Mode Switch */}
       <button onClick={() => setCategory('classic')} className={`mode-button ${category === 'classic' ? 'classic-mode' : ''}`}>
