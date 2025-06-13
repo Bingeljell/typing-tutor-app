@@ -102,17 +102,35 @@ input {
   font-weight: normal;
 }
 
-.mode-button.kids-mode {
-  background-color: #9bf013;
-  color: #595959;
-  font-weight: bold;
-}
-
-.mode-button.classics-mode {
+/* .mode-button.classics-mode, .mode-button.pop-mode, .mode-button.news-mode, .mode-button.stem-mode {
   background-color: #95f200;
+  color: #3e3e3e;
+  font-weight: bold;
+} */
+.mode-button.classic-mode {
+  background-color: #6a4c93;
   color: #fff;
   font-weight: bold;
 }
+
+.mode-button.pop-mode {
+  background-color: #ff4081;
+  color: #fff;
+  font-weight: bold;
+}
+
+.mode-button.news-mode {
+  background-color: #2196f3;
+  color: #fff;
+  font-weight: bold;
+}
+
+.mode-button.stem-mode {
+  background-color: #4caf50;
+  color: #fff;
+  font-weight: bold;
+}
+
 
 /* Progress bar */
 .progress-bar {
@@ -157,6 +175,11 @@ input {
   font-weight: bold;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+.factoid-box.classic-mode { border-color: #6a4c93; }
+.factoid-box.pop-mode { border-color: #ff4081; }
+.factoid-box.news-mode { border-color: #2196f3; }
+.factoid-box.stem-mode { border-color: #4caf50; }
+
 
 /* Stats box */
 .stats-box {
