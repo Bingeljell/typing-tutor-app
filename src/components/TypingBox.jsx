@@ -184,21 +184,13 @@ const TypingBox = () => {
       </div>
       )}
       <input
+        className="typing-input"
         ref={inputRef}
         type="text"
         value={userInput}
         onChange={handleInputChange}
         disabled={isComplete}
-        style={{
-          width: '400px',
-          fontSize: '18px',
-          marginTop: '10px',
-          padding: '8px',
-          color: '#333',
-          borderRadius: '5px',
-          border: '2px solid #ffd54f',
-          background: 'linear-gradient(to bottom, #fffbe6, #fff2cc)'
-        }}
+        
       />
 
       {/* Stats */}
