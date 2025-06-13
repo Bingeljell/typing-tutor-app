@@ -125,107 +125,63 @@ const TypingBox = () => {
     }, 500); // match fadeOut animation duration
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Enter' && isComplete) {
+        handleNextExercise();
+      }
+    };
   
+    window.addEventListener('keydown', handleKeyDown);
+  
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isComplete, handleNextExercise]);
+    
   return (
     
-    <div style={{
-      padding: '10px',
-      maxWidth: '700px',
-      margin: '10px auto',
-      textAlign: 'center',
-      backgroundColor: '#828285',
-      borderRadius: '12px',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-      fontFamily: 'Merriweather'
-    }}>
-      <h2 style ={{
-        fontSize: '42px',
-        fontFamily: 'Playfair Display',
-        color: '#fefefe', /* rich brown */  
-        textShadow: '1px 1px 3px rgba(35, 35, 35, 0.61)'
-      }}>Educate yourself as you learn to type</h2>
+    <div className="typing-box-container">
+      <h2 className="typing-box-title">Educate yourself as you learn to type</h2>
 
       {/* Mode Switch */}
-      <div style={{ marginTop: '20px' }}>
-        <button onClick={() => setMode('kids')}
-          style={{
-            marginRight: '10px',
-            fontWeight: mode === 'kids' ? 'bold' : 'normal',
-            backgroundColor: mode === 'kids' ? '#9bf013' : '#223306',
-            color: mode === 'kids' ? '#000' : '#fff',
-            padding: '8px 12px',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}>
-          Kids Mode
-        </button>
-        <button onClick={() => setMode('classics')}
-          style={{
-            marginRight: '10px',
-            fontWeight: mode === 'classics' ? 'bold' : 'normal',
-            backgroundColor: mode === 'classics' ? '#9bf013' : '#223306',
-            color: mode === 'classics' ? '#000' : '#fff',
-            padding: '8px 12px',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}>
-          Classics Mode
-        </button>
-      </div>
+      <button
+        onClick={() => setMode('kids')}
+        className={`mode-button ${mode === 'kids' ? 'kids-mode' : ''}`}
+      >
+        Kids Mode
+      </button>
+      <button
+        onClick={() => setMode('classics')}
+        className={`mode-button ${mode === 'classics' ? 'classics-mode' : ''}`}
+      >
+        Classics Mode
+      </button>
 
       {/* Progress Bar */}
-      <div style={{
-        height: '10px',
-        width: '100%',
-        backgroundColor: '#e0e0e0',
-        borderRadius: '5px',
-        overflow: 'hidden',
-        marginTop: '10px'
-      }}>
-        <div style={{
-          height: '100%',
-          width: `${sentenceProgressPercent}%`,
-          background: 'linear-gradient(to right, #ff8a65, #ffd54f)',
-          transition: 'width 0.3s ease'
-        }} />
+      <div className="progress-bar">
+        <div
+          className="progress-bar-fill"
+          style={{ width: `${sentenceProgressPercent}%` }}
+        />
       </div>
 
       {/* Typing Text */}
-      <p className="typing-text" style={{
-        fontSize: '28px',
-        letterSpacing: '1.5px',
-        backgroundColor: '#fefefe',
-        color: '#333',
-        padding: '12px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-        border: '1px solid #ccc',
-        maxWidth: '600px',
-        margin: '20px auto',
-        fontFamily: 'Source Code Pro'  // important! monospaced font improves typing clarity
-      }}>
-  {renderText()}
-</p>
+      <p className="typing-text-box">
+        {renderText()}
+      </p>
       {/* Factoid */}
       {isComplete && targetExercise && targetExercise.factoid && (
-        <div style={{
-          marginTop: '12px',
-          padding: '15px',
-          backgroundColor: '#fff9c4',
-          borderRadius: '8px',
-          border: '2px dashed #fbc02d',
-          fontSize: '18px',
-          color: '#333',
-          fontWeight: 'bold',
-          boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+        <div
+        className="factoid-box"
+        style={{
           animation: fadeOutFactoid
             ? 'fadeOut 0.5s ease-out forwards'
             : 'fadeSlideIn 0.6s ease-out forwards, pulse 2s ease-in-out 0.8s 3'
-        }}>
-          🌟 Fun Fact: {targetExercise.factoid}
-        </div>
+        }}
+      >
+        🌟 Fun Fact: {targetExercise.factoid}
+      </div>
       )}
       <input
         ref={inputRef}
@@ -263,14 +219,7 @@ const TypingBox = () => {
           { label: 'Part', value: `${currentPart} / ${partsInCurrentLevel}` },
           { label: 'Progress', value: `${Math.round(progressPercent)}%` }
         ].map((stat, index) => (
-          <div key={index} style={{
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            padding: '5px 7px',
-            minWidth: '100px',
-            textAlign: 'center',
-            boxShadow: '0 2px 6px rgba(255, 221, 0, 0.99)'
-          }}>
+          <div key={index} className="stats-box">
             <div style={{ fontSize: '14px', color: '#666' }}>{stat.label}</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333' }}>{stat.value}</div>
           </div>
@@ -282,26 +231,20 @@ const TypingBox = () => {
 
       {/* Buttons */}
       <div style={{ marginTop: '20px' }}>
-        <button onClick={handleRestart} style={{ marginRight: '10px' }}>
-          Restart
-        </button>
-        <button 
-          onClick={handleNextExercise}
-          disabled={!isComplete}
-          style={{
-            marginRight: '10px',
-            fontWeight: 'bold',
-            backgroundColor: '#9bf013',
-            color: '#000',
-            padding: '8px 12px',
-            border: 'none',
-            borderRadius: '5px',  
-            opacity: isComplete ? 1 : 0.5,
-            cursor: isComplete ? 'pointer' : 'not-allowed'
-          }}
-        >
-          Next Exercise
-        </button>
+      <button onClick={handleRestart} className="general-button">
+        Restart
+      </button>
+      <button
+        onClick={handleNextExercise}
+        disabled={!isComplete}
+        className="general-button"
+        style={{
+          opacity: isComplete ? 1 : 0.5,
+          cursor: isComplete ? 'pointer' : 'not-allowed'
+        }}
+      >
+        Next Exercise
+      </button>
       </div>
 
       {/* Victory Message */}
