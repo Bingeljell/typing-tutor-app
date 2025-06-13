@@ -1,8 +1,10 @@
 // src/components/TypingBox.jsx
 
 import { useState, useEffect, useRef } from 'react';
-import exercises_kids from '../data/exercises_kids';
 import exercises_classics from '../data/exercises_classics';
+import exercises_pop from '../data/exercises_pop';
+import exercises_news from '../data/exercises_news';
+import exercises_stem from '../data/exercises_stem';
 import { calculateWPM, calculateAccuracy } from '../utils/typingUtils';
 import './TypingBox.css';
 import Badge from './Badge';
@@ -16,9 +18,17 @@ const TypingBox = () => {
   const [exerciseCount, setExerciseCount] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [currentPart, setCurrentPart] = useState(1);
-  const [mode, setMode] = useState('kids'); // 'kids' or 'classics'
+  //const [mode, setMode] = useState('kids'); // 'kids' or 'classics'
+  const [category, setCategory] = useState('classics');
 
-  const exercises = mode === 'kids' ? exercises_kids : exercises_classics;
+
+  const exercises = {
+    classic: exercises_classics,
+    pop: exercises_pop,
+    news: exercises_news,
+    stem: exercises_stem
+  }[category] || [];
+  
   const partsInCurrentLevel = exercises.filter(ex => ex.level === currentLevel).length;
   const progressPercent = Math.min((currentPart / partsInCurrentLevel) * 100, 100);
 
@@ -32,11 +42,7 @@ const TypingBox = () => {
   ? Math.min((userInput.length / targetText.length) * 100, 100)
   : 0;
 
-  const progressColor = accuracy >= 95
-    ? '#4caf50'
-    : accuracy >= 75
-    ? '#ffeb3b'
-    : '#f44336';
+
   const [fadeOutFactoid, setFadeOutFactoid] = useState(false);
   
   const inputRef = useRef();
@@ -145,18 +151,19 @@ const TypingBox = () => {
       <h2 className="typing-box-title">Educate yourself as you learn to type</h2>
 
       {/* Mode Switch */}
-      <button
-        onClick={() => setMode('kids')}
-        className={`mode-button ${mode === 'kids' ? 'kids-mode' : ''}`}
-      >
-        Kids Mode
+      <button onClick={() => setCategory('classic')} className={`mode-button ${category === 'classic' ? 'classic-mode' : ''}`}>
+        Classics
       </button>
-      <button
-        onClick={() => setMode('classics')}
-        className={`mode-button ${mode === 'classics' ? 'classics-mode' : ''}`}
-      >
-        Classics Mode
+      <button onClick={() => setCategory('pop')} className={`mode-button ${category === 'pop' ? 'pop-mode' : ''}`}>
+        Pop Culture
       </button>
+      <button onClick={() => setCategory('news')} className={`mode-button ${category === 'news' ? 'news-mode' : ''}`}>
+        News
+      </button>
+      <button onClick={() => setCategory('stem')} className={`mode-button ${category === 'stem' ? 'stem-mode' : ''}`}>
+        STEM
+      </button>
+
 
       {/* Progress Bar */}
       <div className="progress-bar">
@@ -173,7 +180,7 @@ const TypingBox = () => {
       {/* Factoid */}
       {isComplete && targetExercise && targetExercise.factoid && (
         <div
-        className="factoid-box"
+        className={`factoid-box ${category}-mode`}
         style={{
           animation: fadeOutFactoid
             ? 'fadeOut 0.5s ease-out forwards'
