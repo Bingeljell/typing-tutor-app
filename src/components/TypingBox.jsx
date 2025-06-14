@@ -1,265 +1,238 @@
-// src/components/TypingBox.jsx
-
-import { useState, useEffect, useRef } from 'react';
-import exercises_classics from '../data/exercises_classics';
-import exercises_pop from '../data/exercises_pop';
-import exercises_news from '../data/exercises_news';
-import exercises_stem from '../data/exercises_stem';
-import { calculateWPM, calculateAccuracy } from '../utils/typingUtils';
-import './TypingBox.css';
-import Badge from './Badge';
-
+import React, { useEffect, useRef, useState } from 'react';
+import { calculateAccuracy, calculateWPM } from '../utils/typingUtils';
+import classic from '../data/exercises_classics';
+import pop from '../data/exercises_pop';
+import news from '../data/exercises_news';
+import stem from '../data/exercises_stem';
+import { diffChars } from 'diff';
 
 const TypingBox = () => {
+  const [category, setCategory] = useState('classic');
   const [userInput, setUserInput] = useState('');
+  const [currentPart, setCurrentPart] = useState(0);
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [exerciseCount, setExerciseCount] = useState(0);
-  const [currentLevel, setCurrentLevel] = useState(1);
-  const [currentPart, setCurrentPart] = useState(1);
-  //const [mode, setMode] = useState('kids'); // 'kids' or 'classics'
-  const [category, setCategory] = useState('classics');
-
-
-  const exercises = {
-    classic: exercises_classics,
-    pop: exercises_pop,
-    news: exercises_news,
-    stem: exercises_stem
-  }[category] || [];
-  
-  const partsInCurrentLevel = exercises.filter(ex => ex.level === currentLevel).length;
-  const progressPercent = Math.min((currentPart / partsInCurrentLevel) * 100, 100);
-
-  const targetExercise = exercises.find(
-    (ex) => ex.level === currentLevel && ex.part === currentPart
-  );
-
-  const targetText = targetExercise ? targetExercise.text : '';
-  const accuracy = calculateAccuracy(userInput, targetText);
-  const sentenceProgressPercent = targetText.length > 0
-  ? Math.min((userInput.length / targetText.length) * 100, 100)
-  : 0;
-
-
   const [fadeOutFactoid, setFadeOutFactoid] = useState(false);
-  
-  const inputRef = useRef();
+  const inputRef = useRef(null);
 
+  const datasets = { classic, pop, news, stem };
 
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-
-    if (startTime === null) {
-      setStartTime(Date.now());
-    }
-
-    if (!isComplete && value.length >= targetText.length) {
-      setIsComplete(true);
-    }
-
-    setUserInput(value);
-  };
+  const targetExercise = datasets[category][currentPart];
 
   useEffect(() => {
     let timer = null;
-
     if (startTime && !isComplete) {
       timer = setInterval(() => {
         setElapsedTime((Date.now() - startTime) / 1000);
       }, 1000);
     }
-
     return () => clearInterval(timer);
   }, [startTime, isComplete]);
 
   useEffect(() => {
-    if (!isComplete) {
-      inputRef.current?.focus();
-    }
-  }, [currentPart, currentLevel, isComplete]);
+    setUserInput('');
+    setStartTime(null);
+    setElapsedTime(0);
+    setIsComplete(false);
+    setFadeOutFactoid(false);
 
+    // 🎯 Feature : Focus typing input when new exercise loads
+    
+    setTimeout(() => {
+      if (inputRef.current) inputRef.current.focus();
+    }, 50);
+  }, [category, currentPart]);
 
-  const renderText = () => {
-    return targetText.split('').map((char, index) => {
-      let className = '';
-      if (index < userInput.length) {
-        className = char === userInput[index] ? 'correct' : 'incorrect';
+  // 🔑 Feature: Pressing Enter goes to next exercise after completion
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && isComplete) {
+        handleNextExercise();
       }
+    };
 
-      return (
-        <span key={index} className={className}>
-          {char}
-        </span>
-      );
-    });
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isComplete]);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setUserInput(value);
+  
+    if (!startTime) setStartTime(Date.now());
+    const normalize = (str) => str.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
+
+    const normalizedInput = normalize(value.trim());
+    const normalizedTarget = normalize(targetExercise.text.trim());
+
+    if (normalizedInput.length === normalizedTarget.length) {
+      setIsComplete(true);
+      setFadeOutFactoid(false);
+      setTimeout(() => setFadeOutFactoid(true), 4000);
+    }
   };
+  
 
   const handleRestart = () => {
     setUserInput('');
     setStartTime(null);
     setElapsedTime(0);
     setIsComplete(false);
+    setFadeOutFactoid(false);
+    if (inputRef.current) inputRef.current.focus();
   };
 
   const handleNextExercise = () => {
-    // Trigger fade-out first
-    setFadeOutFactoid(true);
-  
-    // Wait 500ms → then run your original logic:
-    setTimeout(() => {
-      const maxPart = partsInCurrentLevel;
-  
-      if (currentPart < maxPart) {
-        setCurrentPart(prev => prev + 1);
-      } else {
-        const maxLevel = Math.max(...exercises.map(ex => ex.level));
-        setCurrentLevel(prevLevel => (prevLevel < maxLevel ? prevLevel + 1 : 1));
-        setCurrentPart(1);
-      }
-  
-      // Reset typing box states
-      setUserInput('');
-      setStartTime(null);
-      setElapsedTime(0);
-      setIsComplete(false);
-      setExerciseCount(prev => prev + 1);
-  
-      // Reset fadeOut state so next factoid animates in fresh
-      setFadeOutFactoid(false);
-    }, 500); // match fadeOut animation duration
+    setCurrentPart((prev) => (prev + 1) % datasets[category].length);
   };
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Enter' && isComplete) {
-        handleNextExercise();
-      }
-    };
+  const renderText = () => {
+    const normalize = (str) =>
+      (str || '').replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
   
-    window.addEventListener('keydown', handleKeyDown);
+    const target = normalize(targetExercise.text);
+    const typed = normalize(userInput);
   
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isComplete, handleNextExercise]);
-    
+    const diffs = diffChars(target, typed);
+  
+    let index = 0;
+    return diffs.map((part, i) => {
+      const chars = part.value.split('');
+      return chars.map((char, j) => {
+        const key = `${i}-${j}`;
+        let className = 'text-gray-400'; // default: not typed
+  
+        if (part.added) {
+          className = 'text-yellow-500'; // extra typed char
+        } else if (part.removed) {
+          className = 'text-red-500'; // missing expected char
+        } else {
+          // equal chars
+          className = index < typed.length ? 'text-green-600' : 'text-gray-400';
+          index++;
+        }
+  
+        return (
+          <span key={key} className={className}>
+            {char}
+          </span>
+        );
+      });
+    });
+  };
+  
+
+  const sentenceProgressPercent = Math.min((userInput.length / targetExercise.text.length) * 100, 100);
+  const stats = [
+    { label: 'Accuracy', value: calculateAccuracy(userInput, targetExercise.text) + '%' },
+    { label: 'WPM', value: calculateWPM(userInput, elapsedTime) },
+    { label: 'Time (s)', value: elapsedTime.toFixed(1) },
+  ];
+
   return (
-    
-    <div className="typing-box-container">
-      <h2 className="typing-box-title">Culture yourself as you learn to type</h2>
-      <p className="instructions">Select a mode below to get started</p>
-
-      {/* Mode Switch */}
-      <button onClick={() => setCategory('classic')} className={`mode-button ${category === 'classic' ? 'classic-mode' : ''}`}>
-        Classics
-      </button>
-      <button onClick={() => setCategory('pop')} className={`mode-button ${category === 'pop' ? 'pop-mode' : ''}`}>
-        Pop Culture
-      </button>
-      <button onClick={() => setCategory('news')} className={`mode-button ${category === 'news' ? 'news-mode' : ''}`}>
-        News
-      </button>
-      <button onClick={() => setCategory('stem')} className={`mode-button ${category === 'stem' ? 'stem-mode' : ''}`}>
-        STEM
-      </button>
-
-
-      {/* Progress Bar */}
-      <div className="progress-bar">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-yellow-50">
+    <div className="w-full max-w-3xl mx-auto p-6 bg-gray-100 rounded-xl shadow-md text-center font-serif">
+      <h2 className="text-4xl font-bold text-purple-800 drop-shadow mb-2">Culture yourself as you learn to type</h2>
+      <p className="text-lg text-gray-800 mb-4">Select a mode below to get started</p>
+      {/* Set mode */}
+      <div className="mb-6">
+        {['classic', 'pop', 'news', 'stem'].map((mode) => (
+          <button
+            key={mode}
+            onClick={() => setCategory(mode)}
+            className={`px-4 py-2 rounded mr-2 font-semibold transition ${
+              category === mode
+                ? 'text-white ' +
+                  (mode === 'classic' ? 'bg-purple-700' :
+                  mode === 'pop' ? 'bg-pink-500' :
+                  mode === 'news' ? 'bg-blue-600' : 'bg-green-600')
+                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+            }`}
+          >
+            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+          </button>
+        ))}
+      </div>
+      {/* Progress bar */}
+      <div className="h-3 w-full bg-gray-300 rounded mt-4 overflow-hidden">
         <div
-          className="progress-bar-fill"
+          className="h-full bg-gradient-to-r from-orange-400 to-yellow-300 transition-all duration-300"
           style={{ width: `${sentenceProgressPercent}%` }}
         />
       </div>
 
-      {/* Typing Text */}
-      <p className="typing-text-box">
+      {/* Text box */}
+      <p className="text-2xl tracking-wide bg-white text-gray-800 p-4 rounded-md shadow border border-gray-300 max-w-xl mx-auto font-mono my-6">
         {renderText()}
       </p>
-      {/* Factoid */}
-      {isComplete && targetExercise && targetExercise.factoid && (
+
+      {/* Factoid box */}
+      {isComplete && targetExercise?.factoid && (
         <div
-        className={`factoid-box ${category}-mode`}
-        style={{
-          animation: fadeOutFactoid
-            ? 'fadeOut 0.5s ease-out forwards'
-            : 'fadeSlideIn 0.6s ease-out forwards, pulse 2s ease-in-out 0.8s 3'
-        }}
-      >
-        🌟 Fun Fact: {targetExercise.factoid}
-      </div>
+          className={`mt-4 p-4 text-lg font-bold rounded-lg shadow-md border-2 bg-yellow-100 ${
+            category === 'classic' ? 'border-purple-700 text-purple-700' :
+            category === 'pop' ? 'border-pink-500 text-pink-500' :
+            category === 'news' ? 'border-blue-500 text-blue-500' : 'border-green-600 text-green-600'
+          }`}
+          style={{
+            animation: fadeOutFactoid
+              ? 'fadeOut 0.5s ease-out forwards'
+              : 'fadeSlideIn 0.6s ease-out forwards, pulse 2s ease-in-out 0.8s 3',
+          }}
+        >
+          🌟 Fun Fact: {targetExercise.factoid}
+        </div>
       )}
+
+      {/* Input box */}
       <input
-        className="typing-input"
         ref={inputRef}
         type="text"
         value={userInput}
         onChange={handleInputChange}
         disabled={isComplete}
-        
+        className="w-full max-w-xl text-lg mt-2 p-3 text-gray-700 border-2 border-yellow-300 bg-yellow-50 rounded-md"
       />
 
-      {/* Stats */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: '5px',
-        marginTop: '40px',
-        fontFamily: 'Inter'
-      }}>
-        {[
-          { label: 'WPM', value: calculateWPM(userInput, elapsedTime) },
-          { label: 'Accuracy', value: `${accuracy}%` },
-          { label: 'Time Elapsed', value: `${Math.floor(elapsedTime)}s` },
-          { label: 'Exercises Completed', value: exerciseCount },
-          { label: 'Level', value: currentLevel },
-          { label: 'Part', value: `${currentPart} / ${partsInCurrentLevel}` },
-          { label: 'Progress', value: `${Math.round(progressPercent)}%` }
-        ].map((stat, index) => (
-          <div key={index} className="stats-box">
-            <div style={{ fontSize: '14px', color: '#666' }}>{stat.label}</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333' }}>{stat.value}</div>
+      {/* Stats box */}
+      <div className="flex flex-wrap justify-center gap-4 mt-8 font-sans">
+        {stats.map((stat, index) => (
+          <div key={index} className="bg-gray-200 rounded-md p-3 w-[120px] text-center shadow">
+            <div className="text-sm text-gray-600">{stat.label}</div>
+            <div className="text-xl font-bold text-gray-800">{stat.value}</div>
           </div>
         ))}
       </div>
 
-      {/* Badge */}
-      {isComplete && <Badge accuracy={accuracy} />}
-
       {/* Buttons */}
-      <div style={{ marginTop: '20px' }}>
-      <button onClick={handleRestart} className="general-button">
-        Restart
-      </button>
-      <button
-        onClick={handleNextExercise}
-        disabled={!isComplete}
-        className="general-button"
-        style={{
-          opacity: isComplete ? 1 : 0.5,
-          cursor: isComplete ? 'pointer' : 'not-allowed'
-        }}
-      >
-        Next Exercise
-      </button>
+      <div className="mt-6 flex justify-center gap-4">
+        <button
+          onClick={handleRestart}
+          className="px-4 py-2 rounded bg-gray-200 font-bold hover:bg-gray-300"
+        >
+          Restart
+        </button>
+        <button
+          onClick={handleNextExercise}
+          disabled={!isComplete}
+          className={`px-4 py-2 rounded font-bold ${
+            isComplete
+              ? 'bg-blue-600 text-white hover:bg-blue-500'
+              : 'bg-blue-300 text-white cursor-not-allowed'
+          }`}
+        >
+          Next Exercise
+        </button>
       </div>
 
-      {/* Victory Message */}
+      {/* Complete message */}  
       {isComplete && (
-        <div>
-          <div style={{
-            fontSize: '32px',
-            marginTop: '20px',
-            color: 'gold',
-            animation: 'pop 0.5s ease-out forwards'
-          }}>
-            🎉 Exercise Complete!
-          </div> 
+        <div className="text-yellow-500 text-3xl mt-6 animate-[pop_0.5s_ease-out_forwards]">
+          🎉 Exercise Complete!
         </div>
       )}
+    </div>
     </div>
   );
 };
