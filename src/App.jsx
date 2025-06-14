@@ -1,15 +1,18 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from 'react';
 import TypingBox from './components/TypingBox';
-
+import Landing from './components/Landing';
 
 function App() {
+  const [hasStarted, setHasStarted] = useState(false);
+
   return (
-    <div style={{ marginTop: '20px', textAlign: 'center' }}>
-      <h1>GutenKeys Typing Tutor</h1>
-      <TypingBox />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    {hasStarted ? (
+    <TypingBox />
+  ) : (
+    <Landing onStart={() => setHasStarted(true)} />
+  )}
     </div>
   );
 }
-
-export default App
+export default App;
