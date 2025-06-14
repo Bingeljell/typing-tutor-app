@@ -15,10 +15,11 @@ const TypingBox = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [fadeOutFactoid, setFadeOutFactoid] = useState(false);
   const inputRef = useRef(null);
-
   const datasets = { classic, pop, news, stem };
-
   const targetExercise = datasets[category][currentPart];
+  const level = targetExercise.level;
+  const currentExercises = datasets[category].filter(ex => ex.level === level);
+  const currentIndex = currentExercises.findIndex(ex => ex.id === targetExercise.id); 
 
   useEffect(() => {
     let timer = null;
@@ -140,7 +141,11 @@ const TypingBox = () => {
         {['classic', 'pop', 'news', 'stem'].map((mode) => (
           <button
             key={mode}
-            onClick={() => setCategory(mode)}
+            onClick={() => {
+              setCurrentPart(0);        // 🔁 Reset index
+              setCategory(mode);        // 🎯 Switch category safely
+            }}
+            
             className={`px-4 py-2 rounded mr-2 font-semibold transition ${
               category === mode
                 ? 'text-white ' +
@@ -154,6 +159,29 @@ const TypingBox = () => {
           </button>
         ))}
       </div>
+
+    
+      {/* 📚 Progress HUD: Level and Part Tracker */}
+        <div className="mb-2">
+          <p className="text-sm text-gray-700 font-semibold">
+            Level {targetExercise.level} — Exercise {currentIndex + 1} of {currentExercises.length}
+          </p>
+          <div className="flex justify-center gap-1 mt-1">
+            {currentExercises.map((ex, i) => (
+              <span
+                key={ex.id}
+                className={`w-3 h-3 rounded-full ${
+                  i === currentIndex
+                    ? 'bg-yellow-500 scale-125'
+                    : i < currentIndex
+                    ? 'bg-green-400'
+                    : 'bg-gray-300'
+                } transition-transform duration-300`}
+              />
+            ))}
+          </div>
+        </div>
+
       {/* Progress bar */}
       <div className="h-3 w-full bg-gray-300 rounded mt-4 overflow-hidden">
         <div
