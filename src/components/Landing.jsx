@@ -1,8 +1,15 @@
 // src/components/Landing.jsx
+import { motion } from 'framer-motion';
+
 const Landing = ({ onStart }) => {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100 text-center p-6 font-sans">
-
+      //<div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100 text-center p-6 font-sans">
+      <motion.div
+        className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100 text-center p-6 font-sans"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
         {/* <h1 className="text-5xl font-bold text-purple-800 mb-4">GutenKeys</h1> */}
         <h1 className="text-6xl font-extrabold text-purple-700 drop-shadow-lg font-display mb-4 tracking-tight">GutenKeys</h1>
 
@@ -40,7 +47,7 @@ const Landing = ({ onStart }) => {
         >
           🚀 Start Typing Adventure
         </button>
-      </div>
+      </motion.div>
     );
   };
  
