@@ -142,8 +142,11 @@ const TypingBox = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-yellow-50">
-    <div className="w-full max-w-3xl mx-auto p-6 bg-gray-100 rounded-xl shadow-md text-center font-serif">
-      <h2 className="text-4xl font-bold text-purple-800 drop-shadow mb-2">Culture yourself as you learn to type</h2>
+    <div className="w-full max-w-4xl mx-auto p-8 bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200 text-center">
+
+    <h2 className="text-4xl font-extrabold font-display text-purple-700 drop-shadow-md mb-4">
+    Culture yourself as you learn to type
+    </h2>
       <p className="text-lg text-gray-800 mb-4">Select a mode below to get started</p>
       {/* Set mode */}
       <div className="mb-6">
