@@ -5,6 +5,7 @@ import pop from '../data/exercises_pop';
 import news from '../data/exercises_news';
 import stem from '../data/exercises_stem';
 import { diffChars } from 'diff';
+import { motion } from 'framer-motion';
 
 const TypingBox = () => {
   const [category, setCategory] = useState('classic');
@@ -141,7 +142,13 @@ const TypingBox = () => {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-yellow-50">
+    //<div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-yellow-50">
+    <motion.div
+    className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
     <div className="w-full max-w-4xl mx-auto p-8 bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200 text-center">
 
     <h2 className="text-4xl font-extrabold font-display text-purple-700 drop-shadow-md mb-4">
@@ -151,7 +158,7 @@ const TypingBox = () => {
       {/* Set mode */}
       <div className="mb-6">
         {['classic', 'pop', 'news', 'stem'].map((mode) => (
-          <button
+          <button 
             key={mode}
             /* onClick={() => {
               setCurrentPart(0);        // 🔁 Reset index
@@ -167,15 +174,17 @@ const TypingBox = () => {
                   return updated;
                 });
               }}
-              
-            className={`px-4 py-2 rounded mr-2 font-semibold transition ${
-              category === mode
-                ? 'text-white ' +
-                  (mode === 'classic' ? 'bg-purple-700' :
-                  mode === 'pop' ? 'bg-pink-500' :
-                  mode === 'news' ? 'bg-blue-600' : 'bg-green-600')
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            }`}
+            
+            className={`px-4 py-2 rounded mr-2 font-semibold transform transition-all duration-200 ease-in-out
+              ${
+                category === mode
+                  ? 'text-white shadow-md scale-105 ' +
+                    (mode === 'classic' ? 'bg-purple-700 hover:bg-purple-800' :
+                     mode === 'pop' ? 'bg-pink-500 hover:bg-pink-600' :
+                     mode === 'news' ? 'bg-blue-600 hover:bg-blue-700' :
+                     'bg-green-600 hover:bg-green-700')
+                  : 'bg-gray-200 text-gray-800 hover:bg-yellow-100 hover:shadow-md hover:-translate-y-0.5'
+              }`}
           >
             {mode.charAt(0).toUpperCase() + mode.slice(1)}
           </button>
@@ -283,7 +292,7 @@ const TypingBox = () => {
         </div>
       )}
     </div>
-    </div>
+    </motion.div>
   );
 };
 
