@@ -10,6 +10,12 @@ const TypingBox = () => {
   const [category, setCategory] = useState('classic');
   const [userInput, setUserInput] = useState('');
   const [currentPart, setCurrentPart] = useState(0);
+  const [currentParts, setCurrentParts] = useState({
+    classic: 0,
+    pop: 0,
+    news: 0,
+    stem: 0
+  });
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -17,6 +23,9 @@ const TypingBox = () => {
   const inputRef = useRef(null);
   const datasets = { classic, pop, news, stem };
   const targetExercise = datasets[category][currentPart];
+  if (!targetExercise) {
+    return <div className="text-center text-red-500">Exercise not found. Please restart.</div>;
+  }
   const level = targetExercise.level;
   const currentExercises = datasets[category].filter(ex => ex.level === level);
   const currentIndex = currentExercises.findIndex(ex => ex.id === targetExercise.id); 
@@ -141,11 +150,21 @@ const TypingBox = () => {
         {['classic', 'pop', 'news', 'stem'].map((mode) => (
           <button
             key={mode}
-            onClick={() => {
+            /* onClick={() => {
               setCurrentPart(0);        // 🔁 Reset index
               setCategory(mode);        // 🎯 Switch category safely
-            }}
-            
+            }} */
+              onClick={() => {
+                setCurrentParts((prev) => {
+                  const updated = { ...prev, [category]: currentPart };
+                  const nextPart = updated[mode] ?? 0;
+                  setCurrentPart(nextPart);
+                  setCategory(mode);
+              
+                  return updated;
+                });
+              }}
+              
             className={`px-4 py-2 rounded mr-2 font-semibold transition ${
               category === mode
                 ? 'text-white ' +
