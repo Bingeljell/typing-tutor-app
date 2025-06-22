@@ -2,6 +2,7 @@ import { useState } from 'react';
 import TypingBox from './components/TypingBox';
 import Landing from './components/Landing';
 import StatsPage from './components/StatsPage';
+import SpeedTestPage from './components/SpeedTestPage';
 
 function App() {
   const [hasStarted, setHasStarted] = useState(false);
@@ -17,6 +18,7 @@ const [currentParts, setCurrentParts] = useState({
   news: 0,
   stem: 0
 });
+const [showSpeedTest, setShowSpeedTest] = useState(false);
 
 
   if (showStats) {
@@ -24,6 +26,9 @@ const [currentParts, setCurrentParts] = useState({
     onBack={() => setShowStats(false)} 
     name={name}
     />;
+  }
+  if (showSpeedTest) {
+    return <SpeedTestPage name={name} onComplete={() => { setShowSpeedTest(false); setHasStarted(true); }} />;
   }
 
   return (
@@ -42,7 +47,9 @@ const [currentParts, setCurrentParts] = useState({
       ) : (
         <Landing
           onStart={() => setHasStarted(true)}
+          onSpeedTest={() => setShowSpeedTest(true)}
           setName={setName}
+
         />
       )}
     </div>

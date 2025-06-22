@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 /*  Start of Landing page */
 
-const Landing = ({ onStart, setName }) => {
+const Landing = ({ onStart, setName, onSpeedTest }) => {
   /* Start of the name personalization feature */
   const [localName, setLocalName] = useState('');
 
@@ -52,6 +52,9 @@ const Landing = ({ onStart, setName }) => {
               When you finish typing a sentence, just press <kbd>Enter</kbd> to jump to the next one.
             </li>
             <li>
+              A <strong>Speed Test Feature</strong> is being added soon, check in again in a few days to test your speed and challenge your friends.
+            </li>
+            <li>
               Focus on <strong>accuracy</strong> first — speed will follow naturally.
             </li>
             <li>
@@ -83,6 +86,12 @@ const Landing = ({ onStart, setName }) => {
             className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
           >
             🚀 Start Typing Adventure
+          </button>
+          <button
+            onClick={() => onSpeedTest()}
+            className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
+          >
+            Test My Speed
           </button>
         </form>
       </motion.div>
