@@ -1,7 +1,29 @@
 // src/components/Landing.jsx
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+
+/*  Start of Landing page */
+
 const Landing = ({ onStart }) => {
+  /* Start of the name personalization feature */
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('name');
+    if (storedName) {
+      setName(storedName);
+    }
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (name.trim()) {
+      localStorage.setItem('name', name);
+      onStart();
+    }
+  };
+
     return (
       //<div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100 text-center p-6 font-sans">
       <motion.div
@@ -37,16 +59,28 @@ const Landing = ({ onStart }) => {
           </ul>
         </div>
 
-        {/* <button style={{ marginTop: '2rem' }}
-          onClick={onStart}
-          className="bg-purple-700 text-white px-6 py-3 rounded-full hover:bg-purple-600 transition"
-        > */}
-        <button
+        {/* <button
           onClick={onStart}
           className="mt-10 bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
         >
           🚀 Start Typing Adventure
-        </button>
+        </button> */}
+
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 mt-8">
+          <input
+            type="text"
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border rounded p-2 w-64 text-center"
+          />
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
+          >
+            🚀 Start Typing Adventure
+          </button>
+        </form>
       </motion.div>
     );
   };

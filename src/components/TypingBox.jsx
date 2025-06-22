@@ -7,6 +7,7 @@ import stem from '../data/exercises_stem';
 import { diffChars } from 'diff';
 import { motion } from 'framer-motion';
 
+const name = localStorage.getItem('name') || 'Friend';  // fallback
 const TypingBox = () => {
   const [category, setCategory] = useState('classic');
   const [userInput, setUserInput] = useState('');
@@ -30,7 +31,8 @@ const TypingBox = () => {
   const level = targetExercise.level;
   const currentExercises = datasets[category].filter(ex => ex.level === level);
   const currentIndex = currentExercises.findIndex(ex => ex.id === targetExercise.id); 
-
+  const progress = JSON.parse(localStorage.getItem('progress')) || {};
+  
   useEffect(() => {
     let timer = null;
     if (startTime && !isComplete) {
@@ -67,6 +69,14 @@ const TypingBox = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isComplete]);
 
+  // 🔑 Feature: Save progress to localStorage
+  const saveProgress = (id, accuracy, wpm) => {
+    const existing = JSON.parse(localStorage.getItem('progress')) || {};
+    existing[id] = { accuracy, wpm, completed: true };
+    localStorage.setItem('progress', JSON.stringify(existing));
+  };
+
+  // This is where we handle the input from a user
   const handleInputChange = (e) => {
     const value = e.target.value;
     setUserInput(value);
@@ -81,6 +91,12 @@ const TypingBox = () => {
       setIsComplete(true);
       setFadeOutFactoid(false);
       setTimeout(() => setFadeOutFactoid(true), 4000);
+
+      // ⬇⬇ Save progress here
+    const accuracy = calculateAccuracy(normalizedInput, normalizedTarget);
+    const wpm = calculateWPM(normalizedInput, startTime, Date.now());
+    saveProgress(targetExercise.id, accuracy, wpm);
+
     }
   };
   
@@ -154,6 +170,7 @@ const TypingBox = () => {
     <h2 className="text-4xl font-extrabold font-display text-purple-700 drop-shadow-md mb-4">
     Culture yourself as you learn to type
     </h2>
+      <header className="text-xl text-gray-800 font-bold mb-4">Welcome {name}!</header>
       <p className="text-lg text-gray-800 mb-4">Select a mode below to get started</p>
       {/* Set mode */}
       <div className="mb-6">
@@ -240,7 +257,7 @@ const TypingBox = () => {
               : 'fadeSlideIn 0.6s ease-out forwards, pulse 2s ease-in-out 0.8s 3',
           }}
         >
-          🌟 Fun Fact: {targetExercise.factoid}
+          🌟 Hey {name}, Here's a Fun Fact: {targetExercise.factoid}
         </div>
       )}
 
@@ -291,6 +308,15 @@ const TypingBox = () => {
           🎉 Exercise Complete!
         </div>
       )}
+      {/* Reset data button */}
+      <div className="mt-6 flex justify-center gap-4">
+      <button onClick={() => {
+        localStorage.removeItem('name');
+        window.location.reload(); // easy reset, or set state if preferred
+      }}>
+      Reset Name
+      </button>
+      </div>
     </div>
     </motion.div>
   );
