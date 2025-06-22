@@ -5,21 +5,22 @@ import { motion } from 'framer-motion';
 
 /*  Start of Landing page */
 
-const Landing = ({ onStart }) => {
+const Landing = ({ onStart, setName }) => {
   /* Start of the name personalization feature */
-  const [name, setName] = useState('');
+  const [localName, setLocalName] = useState('');
 
   useEffect(() => {
     const storedName = localStorage.getItem('name');
     if (storedName) {
-      setName(storedName);
+      setLocalName(storedName);
     }
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (name.trim()) {
-      localStorage.setItem('name', name);
+    if (localName.trim()) {
+      localStorage.setItem('name', localName);
+      setName(localName);
       onStart();
     }
   };
@@ -54,6 +55,9 @@ const Landing = ({ onStart }) => {
               Focus on <strong>accuracy</strong> first — speed will follow naturally.
             </li>
             <li>
+              The current teacher is very lenient and will not peanlise you for minor errors, but you'll still see the errors you make. This is intended.
+            </li>
+            <li>
               Watch for fun facts after each sentence — you might learn something new!
             </li>
           </ul>
@@ -70,8 +74,8 @@ const Landing = ({ onStart }) => {
           <input
             type="text"
             placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={localName}
+            onChange={(e) => setLocalName(e.target.value)}
             className="border rounded p-2 w-64 text-center"
           />
           <button

@@ -7,17 +7,19 @@ import stem from '../data/exercises_stem';
 import { diffChars } from 'diff';
 import { motion } from 'framer-motion';
 
-const name = localStorage.getItem('name') || 'Friend';  // fallback
-const TypingBox = () => {
-  const [category, setCategory] = useState('classic');
+const TypingBox = ({ 
+  name,
+  category,
+  setCategory,
+  currentPart,
+  setCurrentPart,
+  currentParts,
+  setCurrentParts,
+  onShowStats 
+}) => {
+ 
   const [userInput, setUserInput] = useState('');
-  const [currentPart, setCurrentPart] = useState(0);
-  const [currentParts, setCurrentParts] = useState({
-    classic: 0,
-    pop: 0,
-    news: 0,
-    stem: 0
-  });
+
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -31,7 +33,10 @@ const TypingBox = () => {
   const level = targetExercise.level;
   const currentExercises = datasets[category].filter(ex => ex.level === level);
   const currentIndex = currentExercises.findIndex(ex => ex.id === targetExercise.id); 
-  const progress = JSON.parse(localStorage.getItem('progress')) || {};
+  const [progress, setProgress] = useState(() => {
+    // ✅ Change: Use state to hold progress so it updates the UI cleanly
+    return JSON.parse(localStorage.getItem('progress')) || {};
+  });
   
   useEffect(() => {
     let timer = null;
@@ -70,10 +75,17 @@ const TypingBox = () => {
   }, [isComplete]);
 
   // 🔑 Feature: Save progress to localStorage
-  const saveProgress = (id, accuracy, wpm) => {
+  /* const saveProgress = (id, accuracy, wpm) => {
     const existing = JSON.parse(localStorage.getItem('progress')) || {};
     existing[id] = { accuracy, wpm, completed: true };
     localStorage.setItem('progress', JSON.stringify(existing));
+    //console.log("Saving progress:", id, accuracy, wpm);
+  }; */
+  const saveProgress = (id, accuracy, wpm) => {
+    // ✅ Update both localStorage + progress state for UI updates
+    const updated = { ...progress, [id]: { accuracy, wpm, completed: true } };
+    localStorage.setItem('progress', JSON.stringify(updated));
+    setProgress(updated);
   };
 
   // This is where we handle the input from a user
@@ -87,16 +99,17 @@ const TypingBox = () => {
     const normalizedInput = normalize(value.trim());
     const normalizedTarget = normalize(targetExercise.text.trim());
 
-    if (normalizedInput.length === normalizedTarget.length) {
+    if (normalizedInput.length >= normalizedTarget.length) {
       setIsComplete(true);
       setFadeOutFactoid(false);
       setTimeout(() => setFadeOutFactoid(true), 4000);
 
       // ⬇⬇ Save progress here
     const accuracy = calculateAccuracy(normalizedInput, normalizedTarget);
-    const wpm = calculateWPM(normalizedInput, startTime, Date.now());
+    const endTime = Date.now();
+    const finalElapsed = (endTime - startTime) / 1000;
+    const wpm = calculateWPM(normalizedInput, finalElapsed);
     saveProgress(targetExercise.id, accuracy, wpm);
-
     }
   };
   
@@ -221,7 +234,7 @@ const TypingBox = () => {
                 className={`w-3 h-3 rounded-full ${
                   i === currentIndex
                     ? 'bg-yellow-500 scale-125'
-                    : i < currentIndex
+                    : progress[ex.id]
                     ? 'bg-green-400'
                     : 'bg-gray-300'
                 } transition-transform duration-300`}
@@ -309,13 +322,33 @@ const TypingBox = () => {
         </div>
       )}
       {/* Reset data button */}
-      <div className="mt-6 flex justify-center gap-4">
-      <button onClick={() => {
-        localStorage.removeItem('name');
-        window.location.reload(); // easy reset, or set state if preferred
-      }}>
-      Reset Name
+      
+      <div className="mt-4 flex gap-4 justify-center">
+      <button
+        onClick={onShowStats}
+        className="text-sm text-blue-600 underline mt-2"
+      >
+        View My Stats
       </button>
+        <button
+          onClick={() => {
+            localStorage.removeItem('progress');
+            setProgress({});
+          }}
+          className="px-4 py-2 rounded bg-red-100 text-red-600 font-bold hover:bg-red-200"
+        >
+          Reset Stats/Progress
+        </button>
+
+        <button
+          onClick={() => {
+            localStorage.removeItem('name');
+            window.location.reload();  // Easy way to force app to reset name flow
+          }}
+          className="px-4 py-2 rounded bg-yellow-100 text-yellow-700 font-bold hover:bg-yellow-200"
+        >
+          Reset Name
+        </button>
       </div>
     </div>
     </motion.div>
