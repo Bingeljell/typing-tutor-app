@@ -334,6 +334,13 @@ const TypingBox = ({
           onClick={() => {
             localStorage.removeItem('progress');
             setProgress({});
+            setCurrentPart(0);  // ✅ Reset to first part of current mode
+            setCurrentParts({
+              classic: 0,
+              pop: 0,
+              news: 0,
+              stem: 0
+            });
           }}
           className="px-4 py-2 rounded bg-red-100 text-red-600 font-bold hover:bg-red-200"
         >
