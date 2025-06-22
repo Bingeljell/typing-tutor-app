@@ -52,7 +52,7 @@ const Landing = ({ onStart, setName, onSpeedTest }) => {
               When you finish typing a sentence, just press <kbd>Enter</kbd> to jump to the next one.
             </li>
             <li>
-              A <strong>Speed Test Feature</strong> is being added soon, check in again in a few days to test your speed and challenge your friends.
+              A <strong>Speed Test Feature</strong> is being worked upon, you can already test your speed and challenge your friends, we'll add time trials soon.
             </li>
             <li>
               Focus on <strong>accuracy</strong> first — speed will follow naturally.
