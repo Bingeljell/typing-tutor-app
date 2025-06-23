@@ -20,7 +20,6 @@ const [currentParts, setCurrentParts] = useState({
 });
 const [showSpeedTest, setShowSpeedTest] = useState(false);
 
-
   if (showStats) {
     return <StatsPage 
     onBack={() => setShowStats(false)} 
