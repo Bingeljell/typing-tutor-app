@@ -171,20 +171,20 @@ const TypingBox = ({
   ];
 
   return (
-    //<div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-yellow-50">
-    <motion.div
-    className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-    <div className="w-full max-w-4xl mx-auto p-8 bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200 text-center">
 
-    <h2 className="text-4xl font-extrabold font-display text-purple-700 drop-shadow-md mb-4">
+    <motion.div
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
+    <div className="bg-white/60 backdrop-blur-lg border border-gray-300 rounded-2xl shadow-2xl p-6 w-full mx-auto text-center">
+  
+    <h2 className="text-3xl sm:text-4xl font-extrabold font-display text-purple-700 drop-shadow-md mb-4">
     Culture yourself as you learn to type
     </h2>
       <header className="text-xl text-gray-800 font-bold mb-4">Welcome {name}!</header>
-      <p className="text-lg text-gray-800 mb-4">Select a mode below to get started</p>
+      <p className="text-base sm:text-lg text-gray-800 mb-4">Select a mode below to get started</p>
       {/* Set mode */}
       <div className="mb-6">
         {['classic', 'pop', 'news', 'stem'].map((mode) => (
@@ -224,7 +224,7 @@ const TypingBox = ({
     
       {/* 📚 Progress HUD: Level and Part Tracker */}
         <div className="mb-2">
-          <p className="text-sm text-gray-700 font-semibold">
+          <p className="text-xs sm:text-sm text-gray-700 font-semibold">
             Level {targetExercise.level} — Exercise {currentIndex + 1} of {currentExercises.length}
           </p>
           <div className="flex justify-center gap-1 mt-1">
@@ -252,7 +252,7 @@ const TypingBox = ({
       </div>
 
       {/* Text box */}
-      <p className="text-2xl tracking-wide bg-white text-gray-800 p-4 rounded-md shadow border border-gray-300 max-w-xl mx-auto font-mono my-6">
+      <p className="text-lg sm:text-xl tracking-wide bg-white/80 text-gray-800 p-3 rounded-md shadow border border-gray-300 mx-auto font-mono my-4">
         {renderText()}
       </p>
 
@@ -281,14 +281,15 @@ const TypingBox = ({
         value={userInput}
         onChange={handleInputChange}
         disabled={isComplete}
-        className="w-full max-w-xl text-lg mt-2 p-3 text-gray-700 border-2 border-yellow-300 bg-yellow-50 rounded-md"
+        className="w-full text-base sm:text-lg mt-2 p-3 text-gray-700 border-2 border-yellow-300 bg-yellow-50 rounded-md"
       />
 
       {/* Stats box */}
-      <div className="flex flex-wrap justify-center gap-4 mt-8 font-sans">
+    
+      <div className="flex flex-wrap justify-center gap-4 mt-6">
         {stats.map((stat, index) => (
-          <div key={index} className="bg-gray-200 rounded-md p-3 w-[120px] text-center shadow">
-            <div className="text-sm text-gray-600">{stat.label}</div>
+          <div key={index} className="bg-white/80 border border-gray-300 rounded-lg p-4 w-32 shadow">
+            <div className="text-xs text-gray-600">{stat.label}</div>
             <div className="text-xl font-bold text-gray-800">{stat.value}</div>
           </div>
         ))}
@@ -357,6 +358,7 @@ const TypingBox = ({
           Reset Name
         </button>
       </div>
+  
     </div>
     </motion.div>
   );

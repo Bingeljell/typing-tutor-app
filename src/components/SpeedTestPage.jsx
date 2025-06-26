@@ -80,7 +80,7 @@ const SpeedTestPage = ({ onComplete, name }) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-xl bg-white/90 backdrop-blur-lg border rounded-xl shadow p-8 text-center">
+      <div className="max-w-5xl bg-white/90 backdrop-blur-lg border rounded-xl shadow p-8 text-center">
         <h1 className="text-3xl font-bold text-purple-700 mb-4">⚡ Typing Speed Test</h1>
         <p className="mb-2 text-gray-700 font-semibold">Welcome, {name}!</p>
         <p className="mb-4 text-gray-600">Type the sentence below as fast and accurately as you can:</p>
@@ -100,6 +100,7 @@ const SpeedTestPage = ({ onComplete, name }) => {
         {isComplete && (
           <div className="mt-4 mb-4">
             <p className="text-green-700 font-bold">✅ Speed Test Complete!</p>
+            <p className="text-gray-600">Challenges your friends to a Type-off!</p>
             <div className="flex justify-center gap-4 mt-4">
               <div className="bg-purple-100 border border-purple-300 rounded-lg p-4 shadow w-32">
                 <div className="text-sm text-purple-700">Accuracy</div>
