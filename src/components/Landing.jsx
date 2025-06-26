@@ -33,7 +33,7 @@ const Landing = ({ onStart, setName, onSpeedTest }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-       <div className="bg-white/60 backdrop-blur-lg border border-gray-300 rounded-2xl shadow-2xl p-6 max-w-5xl w-full mx-auto text-center border-4 border-red-500">
+       <div className="bg-white/60 backdrop-blur-lg border border-gray-300 rounded-2xl shadow-2xl p-6 max-w-4xl w-full mx-auto text-center">
         {/* <h1 className="text-5xl font-bold text-purple-800 mb-4">GutenKeys</h1> */}
         <h1 className="sm:text-4xl font-extrabold text-purple-700 drop-shadow-lg font-display mb-4 tracking-tight">GutenKeys</h1>
 
