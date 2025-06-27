@@ -65,6 +65,14 @@ const Landing = ({ onStart, setName, onSpeedTest }) => {
             Test My Speed
           </button>
           </form>
+          <a
+            href="https://forms.gle/v5MPkP3fuWd1W9L36"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-6 bg-blue-600 text-white px-4 py-2 rounded-full shadow hover:bg-blue-700 transition"
+          >
+            💬 Feature Request / Give Feedback
+          </a>
           <div className="bg-white/90 backdrop-blur-lg border border-yellow-300 rounded-2xl shadow-xl p-8 max-w-4xl mx-auto mt-8 text-left transition-transform hover:scale-[1.01]">
 
           <h3 className="sm:text-2xl font-bold text-purple-700 mb-4">👋 Welcome to the Typing Tutor!</h3>
