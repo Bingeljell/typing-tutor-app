@@ -38,12 +38,33 @@ const Landing = ({ onStart, setName, onSpeedTest }) => {
         <h1 className="sm:text-4xl font-extrabold text-purple-700 drop-shadow-lg font-display mb-4 tracking-tight">GutenKeys</h1>
 
         {/* <p className="text-lg text-gray-700 mb-8">An experiment to culture our youth as they learn how to type.</p> */}
-        <p className="sm:text-lg text-gray-700 mb-2 leading-relaxed">
+        <p className="sm:text-md text-gray-700 mb-2 leading-relaxed">
           Unlock the world of words, one keystroke at a time! <br /><br />
           Ready for an adventure? At GutenKeys, you’ll <strong>dive into the minds of great authors</strong>, <strong>re-live iconic moments from pop culture</strong>, and <strong>explore science and news that shape our world</strong>, all while sharpening your typing skills.  
           <br /><br />
           Every sentence you type brings a new discovery: from the curious world of <em>Alice in Wonderland</em> to the breakthroughs of STEM heroes. Whether you’re learning for school, fun, or future greatness, this is where your typing journey begins!
         </p>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 mt-8">
+          <input
+            type="text"
+            placeholder="Enter your name"
+            value={localName}
+            onChange={(e) => setLocalName(e.target.value)}
+            className="border rounded p-2 w-64 text-center"
+          />
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
+          >
+            🚀 Start Typing Adventure
+          </button>
+          <button
+            onClick={() => onSpeedTest()}
+            className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
+          >
+            Test My Speed
+          </button>
+          </form>
           <div className="bg-white/90 backdrop-blur-lg border border-yellow-300 rounded-2xl shadow-xl p-8 max-w-4xl mx-auto mt-8 text-left transition-transform hover:scale-[1.01]">
 
           <h3 className="sm:text-2xl font-bold text-purple-700 mb-4">👋 Welcome to the Typing Tutor!</h3>
@@ -79,27 +100,7 @@ const Landing = ({ onStart, setName, onSpeedTest }) => {
           🚀 Start Typing Adventure
         </button> */}
 
-        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 mt-8">
-          <input
-            type="text"
-            placeholder="Enter your name"
-            value={localName}
-            onChange={(e) => setLocalName(e.target.value)}
-            className="border rounded p-2 w-64 text-center"
-          />
-          <button
-            type="submit"
-            className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
-          >
-            🚀 Start Typing Adventure
-          </button>
-          <button
-            onClick={() => onSpeedTest()}
-            className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
-          >
-            Test My Speed
-          </button>
-        </form>
+        
        </div>
       </motion.div>
     );
