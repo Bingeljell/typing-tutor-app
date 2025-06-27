@@ -31,7 +31,7 @@ const [showSpeedTest, setShowSpeedTest] = useState(false);
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <>
       {hasStarted ? (
         <TypingBox
           name={name}
@@ -51,7 +51,7 @@ const [showSpeedTest, setShowSpeedTest] = useState(false);
 
         />
       )}
-    </div>
+    </>
   );
 }
 export default App;

@@ -178,7 +178,7 @@ const TypingBox = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-    <div className="bg-white/60 backdrop-blur-lg border border-gray-300 rounded-2xl shadow-2xl p-6 w-full mx-auto text-center">
+    <div className="bg-white/60 backdrop-blur-lg border border-gray-300 rounded-2xl shadow-2xl p-6 w-full max-w-4xl mx-auto text-center">
   
     <h2 className="text-3xl sm:text-4xl font-extrabold font-display text-purple-700 drop-shadow-md mb-4">
     Culture yourself as you learn to type
