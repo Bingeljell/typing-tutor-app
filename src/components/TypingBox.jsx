@@ -265,7 +265,7 @@ const TypingBox = ({
           </div>
 
           {/* Text Display */}
-          <div className="text-lg sm:text-xl tracking-wide bg-white/80 text-gray-800 p-4 rounded-lg shadow border border-gray-300 font-mono mb-6 min-h-[100px] flex items-center">
+          <div className="text-lg sm:text-xl tracking-wide bg-white/80 text-gray-800 p-4 rounded-lg shadow border border-gray-300 font-mono mb-6 min-h-[100px] break-words whitespace-pre-wrap">
             {renderText()}
           </div>
 

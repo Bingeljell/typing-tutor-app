@@ -62,14 +62,14 @@ const Landing = ({ onStart, setName, onSpeedTest }) => {
             onClick={() => onSpeedTest()}
             className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
           >
-            Test My Speed
+            Time Trial ⚡
           </button>
           </form>
           <a
             href="https://forms.gle/v5MPkP3fuWd1W9L36"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-6 bg-blue-600 text-white px-4 py-2 rounded-full shadow hover:bg-blue-700 transition"
+            className="inline-block mt-6 bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 text-white px-4 py-2 rounded-full shadow hover:bg-white hover:text-gray-400 transition"
           >
             💬 Feature Request / Give Feedback
           </a>

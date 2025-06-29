@@ -1,9 +1,10 @@
 const popExercises = [
-  { id: 'pop-001-1', level: 1, part: 1, category: 'pop', text: 'To infinity and beyond!', factoid: 'Buzz Lightyear’s catchphrase from Toy Story.' },
-  { id: 'pop-001-2', level: 1, part: 2, category: 'pop', text: "I’m gonna make him an offer he can’t refuse.", factoid: 'Iconic line from The Godfather (1972).' },
-  { id: 'pop-001-3', level: 1, part: 3, category: 'pop', text: 'May the Force be with you.', factoid: 'Famous line from Star Wars.' },
-  { id: 'pop-001-4', level: 1, part: 4, category: 'pop', text: "We don't talk about Bruno.", factoid: 'Line from the hit song in Encanto (Disney, 2021).' },
-  { id: 'pop-001-5', level: 1, part: 5, category: 'pop', text: "Just keep swimming.", factoid: 'Advice from Dory in Finding Nemo.' },  
+
+  { id: 'pop-001-1', level: 1, part: 1, category: 'pop', text: "You belong with me, standing in your backyard all this time. She doesn’t get your humor like I do.", factoid: "From Taylor Swift’s hit 'You Belong With Me' (2008) on the Fearless album." },
+  { id: 'pop-001-2', level: 1, part: 2, category: 'pop', text: "We are never ever getting back together, like ever. I used to say we’d break up and get back together, but not this time.", factoid: "From 'We Are Never Ever Getting Back Together' on her Red album." },
+  { id: 'pop-001-3', level: 1, part: 3, category: 'pop', text: "I shake it off, and keep dancing on my own beat. The players gonna play and haters gonna hate.", factoid: "Inspired by 'Shake It Off' from 1989, a song about ignoring criticism." },
+  { id: 'pop-001-4', level: 1, part: 4, category: 'pop', text: "I knew you were trouble when you walked in, so shame on me now. You crashed my world, now it’s lying on the cold hard ground.", factoid: "From the song 'I Knew You Were Trouble' on the Red album." },
+  { id: 'pop-001-5', level: 1, part: 5, category: 'pop', text: "It’s me, hi, I’m the problem, it’s me. Sometimes I stare directly at the sun but never in the mirror.", factoid: "From 'Anti-Hero' on Midnights (2022), about self-awareness and reflection." },  
  
   { id: 'pop-002-1', level: 2, part: 1, category: 'pop', text: "Wakanda forever!", factoid: 'Chant from Black Panther (2018), symbolizing unity and strength.' },
   { id: 'pop-002-2', level: 2, part: 2, category: 'pop', text: "Why so serious?", factoid: 'Spoken by the Joker in The Dark Knight (2008).' },
@@ -28,6 +29,12 @@ const popExercises = [
   { id: 'pop-005-3', level: 5, part: 3, category: 'pop', text: "It’s-a me, Mario!", factoid: 'The iconic catchphrase of Nintendo’s famous plumber.' },
   { id: 'pop-005-4', level: 5, part: 4, category: 'pop', text: "I'm sorry, Dave. I'm afraid I can't do that.", factoid: 'HAL 9000 in 2001: A Space Odyssey (1968).' },
   { id: 'pop-005-5', level: 5, part: 5, category: 'pop', text: "We are Groot.", factoid: 'A touching moment from Guardians of the Galaxy, showing unity.' },
+  
+  { id: 'pop-006-1', level: 6, part: 1, category: 'pop', text: 'To infinity and beyond!', factoid: 'Buzz Lightyear’s catchphrase from Toy Story.' },
+  { id: 'pop-006-2', level: 6, part: 2, category: 'pop', text: "I’m gonna make him an offer he can’t refuse.", factoid: 'Iconic line from The Godfather (1972).' },
+  { id: 'pop-006-3', level: 6, part: 3, category: 'pop', text: 'May the Force be with you.', factoid: 'Famous line from Star Wars.' },
+  { id: 'pop-006-4', level: 6, part: 4, category: 'pop', text: "We don't talk about Bruno.", factoid: 'Line from the hit song in Encanto (Disney, 2021).' },
+  { id: 'pop-006-5', level: 6, part: 5, category: 'pop', text: "Just keep swimming.", factoid: 'Advice from Dory in Finding Nemo.' },
 
 ];
 
