@@ -310,7 +310,7 @@ const TypingBox = ({
                 date: new Date().toLocaleString()
               })}   
 
-             // Summary Card  
+             {/* Summary Card  */}  
               <div className="flex mt-4 px-4 py-2 rounded justify-center">
                 <SummaryCard
                 ref={cardRef}
@@ -322,10 +322,39 @@ const TypingBox = ({
               </div>
             <button
               onClick={handleScreenshot}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+              className="px-4 mt-4 py-2 bg-blue-600 text-white rounded"
             >
-              Capture & Share
+              Capture Score Screenshot
             </button>
+            {/* Share Score */}   
+          <button
+            onClick={() => {
+
+              const currentWPM = calculateWPM(userInput, elapsedTime);
+              const currentAccuracy = calculateAccuracy(userInput, targetExercise.text);
+
+              if (navigator.share) {
+                navigator.share({
+                  title: 'Check my typing speed!',
+                  text: `I scored ${currentWPM} WPM with ${currentAccuracy}% accuracy on this typing app!`,
+                  url: window.location.href
+                })
+                .then(() => console.log('Shared successfully'))
+                .catch((err) => console.error('Share failed:', err));
+              } else {
+                navigator.clipboard.writeText(window.location.href)
+                  .then(() => {
+                    alert('Link copied to clipboard!');
+                  })
+                  .catch(() => {
+                    alert('Failed to copy link. Please copy the link manually.');
+                  });
+              }
+            }}
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Share Score
+          </button>
             {imageURL && (
               <div className="mt-4">
                 <a
@@ -340,7 +369,7 @@ const TypingBox = ({
               <p className="text-sm text-gray-600 mb-4">Press Enter or click Next to continue</p>
             </div>
           )}
-
+          
           {/* Factoid */}
           {isComplete && targetExercise?.factoid && (
             <div
