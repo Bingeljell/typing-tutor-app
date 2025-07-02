@@ -6,6 +6,8 @@ import news from '../data/exercises_news';
 import stem from '../data/exercises_stem';
 import { diffChars } from 'diff';
 import { motion } from 'framer-motion';
+import html2canvas from "html2canvas";
+import SummaryCard from "./SummaryCard";
 
 const TypingBox = ({ 
   name,
@@ -156,6 +158,21 @@ const TypingBox = ({
     { label: 'Time (s)', value: elapsedTime.toFixed(1) },
   ];
 
+  // Screenshot Feature
+  const cardRef = useRef();
+  const [imageURL, setImageURL] = useState(null);
+
+  const handleScreenshot = () => {
+    if (cardRef.current) {
+      console.log("cardRef.current at snapshot time:", cardRef.current);
+      setTimeout(() => {
+        html2canvas(cardRef.current, {useCORS: true}).then((canvas) => {
+          setImageURL(canvas.toDataURL("image/png"));
+        });
+      }, 100);  // 100ms is usually enough
+    }
+  };
+
   return (
     <motion.div
       className="flex flex-col min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100"
@@ -286,6 +303,40 @@ const TypingBox = ({
               <div className="text-green-600 text-2xl mb-4 animate-[pop_0.5s_ease-out_forwards]">
                 🎉 Exercise Complete!
               </div>
+              {console.log({
+                name,
+                wpm: calculateWPM(userInput, elapsedTime),
+                accuracy: calculateAccuracy(userInput, targetExercise.text),
+                date: new Date().toLocaleString()
+              })}   
+
+             // Summary Card  
+              <div className="flex mt-4 px-4 py-2 rounded justify-center">
+                <SummaryCard
+                ref={cardRef}
+                name={name}
+                wpm={calculateWPM(userInput, elapsedTime)}
+                accuracy={calculateAccuracy(userInput, targetExercise.text)}
+                date={new Date().toLocaleString()}
+                />
+              </div>
+            <button
+              onClick={handleScreenshot}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Capture & Share
+            </button>
+            {imageURL && (
+              <div className="mt-4">
+                <a
+                  href={imageURL}
+                  download={`typing_score_${Date.now()}.png`}
+                  className="underline text-blue-500"
+                >
+                  Download Screenshot
+                </a>
+              </div>
+            )}
               <p className="text-sm text-gray-600 mb-4">Press Enter or click Next to continue</p>
             </div>
           )}

@@ -6,6 +6,8 @@ import classic from '../data/exercises_classics';
 import pop from '../data/exercises_pop';
 import news from '../data/exercises_news';
 import stem from '../data/exercises_stem';
+import html2canvas from "html2canvas";
+import SummaryCard from "./SummaryCard";
 
 
 const SpeedTestPage = ({ onComplete, name }) => {
@@ -141,6 +143,19 @@ const [cumulativeTarget, setCumulativeTarget] = useState('');
   const accuracy = calculateAccuracy(cumulativeInput, cumulativeTarget);
   const wpm = calculateWPM(cumulativeInput, elapsedTime);
 
+  // Screenshot Feature
+  const cardRef = useRef();
+  const [imageURL, setImageURL] = useState(null);
+
+  const handleScreenshot = () => {
+    if (cardRef.current) {
+      html2canvas(cardRef.current).then((canvas) => {
+        setImageURL(canvas.toDataURL("image/png"));
+      });
+    }
+  }; 
+
+  // Load the page
   return (
     <motion.div
       className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 via-purple-100 to-pink-100 p-6"
@@ -192,6 +207,35 @@ const [cumulativeTarget, setCumulativeTarget] = useState('');
                 <div className="text-2xl font-bold text-blue-900">{wpm}</div>
               </div>
             </div>
+            <div className="flex mt-4 px-4 py-2 rounded justify-center">
+              <SummaryCard
+                ref={cardRef}
+                name={name}
+                wpm={wpm}
+                accuracy={accuracy}
+                date={new Date().toLocaleString()}
+              />
+              
+            </div>
+            <div className="flex mt-4 px-4 py-2 rounded justify-center">
+            <button
+              onClick={handleScreenshot}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Capture & Share
+            </button>
+            </div>
+            {imageURL && (
+              <div className="mt-4">
+                <a
+                  href={imageURL}
+                  download={`typing_score_${Date.now()}.png`}
+                  className="underline text-blue-500"
+                >
+                  Download Screenshot
+                </a>
+              </div>
+            )}
             <button
               onClick={restartTimeTrial}
               className="mt-4 bg-gradient-to-r from-green-500 via-green-600 to-green-700 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
