@@ -184,17 +184,30 @@ const TypingBox = ({
     
     switch(platform) {
       case 'twitter':
+        try {
         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-        break;
+        } catch (e) {
+          console.log("Could not open Window", e);
+        } 
+          break;
       case 'facebook':
+        try {
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
-        break;
+        } catch (e) {
+          console.log("Could not open Window", e);
+        } break;
       case 'whatsapp':
+        try {
         window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, '_blank');
-        break;
+        } catch (e) {
+          console.log("Could not open Window", e);
+          } break;
       case 'linkedin':
+        try {
         window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
-        break;
+        } catch (e) {
+          console.log("Could not open Window", e);
+          } break;
       default:
         shareScore(wpm, accuracy);
     }

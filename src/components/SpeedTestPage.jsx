@@ -25,7 +25,6 @@ const SpeedTestPage = ({ onComplete, name }) => {
     setTarget(timeTrialPool[randomIndex].text);
   }, []);
 
-  const [userInput, setUserInput] = useState('');
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const inputRef = useRef(null);
@@ -154,16 +153,32 @@ const [cumulativeTarget, setCumulativeTarget] = useState('');
     
     switch(platform) {
       case 'twitter':
+        try {
         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+        } catch (e) {
+          console.error("Could not open Window", e);
+        }
         break;
       case 'facebook':
+        try {
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+        } catch (e) {
+          console.error("Could not open Window", e);
+        }
         break;
       case 'whatsapp':
+        try {
         window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, '_blank');
+        } catch (e) {
+            console.error("Could not open Window", e);
+        }
         break;
       case 'linkedin':
+        try {
         window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
+        } catch (e) {
+          console.error("Could not open Window", e);
+        }
         break;
       default:
         shareScore(wpm, accuracy);
@@ -171,7 +186,7 @@ const [cumulativeTarget, setCumulativeTarget] = useState('');
   };
 
   const shareScore = async (wpm, accuracy) => {
-    const shareText = `I just scored ${wpm} WPM with ${accuracy}% accuracy on Gutenkeys Typing Tutor! ⌨️🚀`;
+    const shareText = `I just scored ${wpm} WPM with ${accuracy}% accuracy on Gutenkeys Typing Tutor! ⌨️ 🚀`;
     const shareUrl = window.location.href;
     
     if (navigator.share) {
@@ -232,7 +247,7 @@ const [cumulativeTarget, setCumulativeTarget] = useState('');
         <div className="relative overflow-hidden min-h-[200px] w-full h-24 bg-gray-100 rounded mb-4 border max-w-5xl">
           <div
             className="absolute whitespace-pre-wrap transition-transform"
-            style={{ transform: `translateY(-${input.length * 0.2}px)` }} // Vertical scroll and speed control
+            style={{ transform: `translateY(-${input.length * 0.1}px)` }} // Vertical scroll and speed control
           >
             {renderText()}
           </div>
@@ -254,7 +269,7 @@ const [cumulativeTarget, setCumulativeTarget] = useState('');
         {isComplete && (
           <div className="mt-4 mb-4">
             <p className="text-green-700 font-bold">✅ Time Trial Complete!</p>
-            <p className="text-gray-600">Challenges your friends to a Type-off!</p>
+            <p className="text-gray-600">Challenge your friends to a Type-off!</p>
             <div className="flex justify-center gap-4 mt-4">
               <div className="bg-purple-100 border border-purple-300 rounded-lg p-4 shadow w-32">
                 <div className="text-sm text-purple-700">Accuracy</div>
