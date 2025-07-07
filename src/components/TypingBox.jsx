@@ -162,15 +162,110 @@ const TypingBox = ({
   const cardRef = useRef();
   const [imageURL, setImageURL] = useState(null);
 
-  const handleScreenshot = () => {
-    if (cardRef.current) {
-      console.log("cardRef.current at snapshot time:", cardRef.current);
-      setTimeout(() => {
-        html2canvas(cardRef.current, {useCORS: true}).then((canvas) => {
-          setImageURL(canvas.toDataURL("image/png"));
-        });
-      }, 100);  // 100ms is usually enough
+  const handleScreenshot = async () => {
+    if (!cardRef.current) return null;
+    
+    try {
+      const canvas = await html2canvas(cardRef.current, { useCORS: true });
+      const imageUrl = canvas.toDataURL("image/png");
+      setImageURL(imageUrl);
+      return canvas;
+    } catch (error) {
+      console.error("Error capturing screenshot:", error);
+      return null;
     }
+  };
+
+  const shareToSocial = async (platform, wpm, accuracy) => {
+    const shareText = `I just scored ${wpm} WPM with ${accuracy}% accuracy on Gutentype! 🚀`;
+    const shareUrl = window.location.href;
+    
+    // No need to capture screenshot for social sharing
+    
+    switch(platform) {
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, '_blank');
+        break;
+      case 'linkedin':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
+        break;
+      default:
+        shareScore(wpm, accuracy);
+    }
+  };
+
+  const shareScore = async (wpm, accuracy) => {
+    const shareText = `I just scored ${wpm} WPM with ${accuracy}% accuracy on Gutentype! 🚀`;
+    const shareUrl = window.location.href;
+    
+    // First try to share with Web Share API (Level 2 with files)
+    if (navigator.share && navigator.canShare) {
+      try {
+        const canvas = await handleScreenshot();
+        if (!canvas) throw new Error("Could not capture screenshot");
+        
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const file = new File([blob], 'typing-score.png', { type: 'image/png' });
+        
+        // Check if files can be shared
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: 'My Typing Score',
+            text: shareText,
+            files: [file],
+            url: shareUrl,
+          });
+          return;
+        }
+      } catch (error) {
+        console.log('Error sharing with files, falling back to text:', error);
+        // Continue to text-only share if file sharing fails
+      }
+      
+      // Fallback to text-only share
+      try {
+        await navigator.share({
+          title: 'My Typing Score',
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch (err) {
+        console.log('Error sharing text:', err);
+      }
+    }
+    
+    // Fallback for browsers without Web Share API or when sharing is cancelled
+    copyToClipboard(shareUrl);
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        alert('Link copied to clipboard!');
+      })
+      .catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          alert('Link copied to clipboard!');
+        } catch (err) {
+          console.error('Failed to copy text: ', err);
+          alert('Failed to copy link. Please copy it manually.');
+        }
+        document.body.removeChild(textarea);
+      });
   };
 
   return (
@@ -211,8 +306,7 @@ const TypingBox = ({
                       ? 'text-white shadow-md scale-105 ' +
                         (mode === 'classic' ? 'bg-purple-700 hover:bg-purple-800' :
                          mode === 'pop' ? 'bg-pink-500 hover:bg-pink-600' :
-                         mode === 'news' ? 'bg-blue-600 hover:bg-blue-700' :
-                         'bg-green-600 hover:bg-green-700')
+                         mode === 'news' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700')
                       : 'bg-gray-200 text-gray-800 hover:bg-yellow-100 hover:shadow-md hover:-translate-y-0.5'
                   }`}
               >
@@ -320,41 +414,61 @@ const TypingBox = ({
                 date={new Date().toLocaleString()}
                 />
               </div>
+            <div className="flex flex-wrap justify-center gap-3 mt-4">
+              <button
+                onClick={() => shareToSocial('twitter', calculateWPM(userInput, elapsedTime), calculateAccuracy(userInput, targetExercise.text))}
+                className="p-2 bg-blue-400 hover:bg-blue-500 text-white rounded-full transition-colors"
+                aria-label="Share on Twitter"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                </svg>
+              </button>
+              <button
+                onClick={() => shareToSocial('facebook', calculateWPM(userInput, elapsedTime), calculateAccuracy(userInput, targetExercise.text))}
+                className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors"
+                aria-label="Share on Facebook"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => shareToSocial('whatsapp', calculateWPM(userInput, elapsedTime), calculateAccuracy(userInput, targetExercise.text))}
+                className="p-2 bg-green-500 hover:bg-green-600 text-white rounded-full transition-colors"
+                aria-label="Share on WhatsApp"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.498 14.382v-.002c-.301-.196-.812-.475-1.35-.69-.18-.072-.384-.148-.4-.156-.06-.025-.1-.04-.143.03-.045.07-.167.24-.205.292-.04.05-.08.057-.15.01-.07-.04-.29-.14-.55-.27-1.2-.58-1.99-1.3-2.22-1.45-.05-.04-.07-.06-.1-.04-.03.02-.04.04-.07.07-.04.04-.16.2-.2.24-.04.05-.08.05-.15.02-.07-.04-.3-.12-.57-.24-1.15-.5-1.9-1.67-1.96-1.75-.06-.08 0-.18.02-.23.02-.04.2-.25.3-.43.1-.16.2-.27.3-.43.1-.16.13-.27.2-.45.07-.18.04-.34-.02-.47-.06-.14-.55-1.32-.76-1.8-.2-.5-.4-.43-.55-.44-.14 0-.3-.01-.46-.01-.16 0-.4.06-.62.28-.22.22-.83.81-.83 1.98 0 1.16.85 2.3.97 2.46.12.16 1.68 2.56 4.07 3.59.56.24.99.39 1.33.5.56.19 1.06.16 1.46.1.45-.07 1.08-.44 1.23-.86.16-.42.16-.78.11-.86-.04-.08-.15-.12-.3-.2zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22.5c-5.79 0-10.5-4.71-10.5-10.5S6.21 1.5 12 1.5 22.5 6.21 22.5 12 17.79 22.5 12 22.5z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => shareToSocial('linkedin', calculateWPM(userInput, elapsedTime), calculateAccuracy(userInput, targetExercise.text))}
+                className="p-2 bg-blue-700 hover:bg-blue-800 text-white rounded-full transition-colors"
+                aria-label="Share on LinkedIn"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Share Score Button */}
             <button
+              onClick={() => shareScore(calculateWPM(userInput, elapsedTime), calculateAccuracy(userInput, targetExercise.text))}
+              className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center mx-auto"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              Share Your Score
+            </button>
+           {/*  <button
               onClick={handleScreenshot}
               className="px-4 mt-4 py-2 bg-blue-600 text-white rounded"
             >
               Capture Score Screenshot
-            </button>
-            {/* Share Score */}   
-          <button
-            onClick={() => {
-
-              const currentWPM = calculateWPM(userInput, elapsedTime);
-              const currentAccuracy = calculateAccuracy(userInput, targetExercise.text);
-
-              if (navigator.share) {
-                navigator.share({
-                  title: 'Check my typing speed!',
-                  text: `I scored ${currentWPM} WPM with ${currentAccuracy}% accuracy on this typing app!`,
-                  url: window.location.href
-                })
-                .then(() => console.log('Shared successfully'))
-                .catch((err) => console.error('Share failed:', err));
-              } else {
-                navigator.clipboard.writeText(window.location.href)
-                  .then(() => {
-                    alert('Link copied to clipboard!');
-                  })
-                  .catch(() => {
-                    alert('Failed to copy link. Please copy the link manually.');
-                  });
-              }
-            }}
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Share Score
-          </button>
+            </button> */}
             {imageURL && (
               <div className="mt-4">
                 <a
