@@ -177,7 +177,7 @@ const TypingBox = ({
   };
 
   const shareToSocial = async (platform, wpm, accuracy) => {
-    const shareText = `I just scored ${wpm} WPM with ${accuracy}% accuracy on Gutentype! 🚀`;
+    const shareText = `I just scored ${wpm} WPM with ${accuracy}% accuracy on Gutenkeys Typing Tutor! ⌨️🚀`;
     const shareUrl = window.location.href;
     
     // No need to capture screenshot for social sharing
@@ -473,7 +473,7 @@ const TypingBox = ({
               <div className="mt-4">
                 <a
                   href={imageURL}
-                  download={`typing_score_${Date.now()}.png`}
+                  download={`Gutenkeys_typing_score_${Date.now()}.png`}
                   className="underline text-blue-500"
                 >
                   Download Screenshot
