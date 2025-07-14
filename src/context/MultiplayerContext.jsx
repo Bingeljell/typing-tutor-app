@@ -36,6 +36,7 @@ export const MultiplayerProvider = ({ children }) => {
     conn?.send({ type: 'done', stats });
     if (opponentFinalStats) {                      
       decideWinner(stats, opponentFinalStats);
+      setGameOver(true);
     }
     console.log('🏁 signalDone called', stats)
 
@@ -64,12 +65,15 @@ export const MultiplayerProvider = ({ children }) => {
         if (data?.type === 'ready') {
           setOpponentReady(true);
         } else if (data?.type === 'done') {
-          
           setOpponentFinalStats(data.stats);
           console.log('📩 received done', data.stats);
       
-          if (myFinalStats) {
-            decideWinner(myFinalStats, data.stats);
+            if (myFinalStats) {
+              decideWinner(myFinalStats, data.stats);
+              setGameOver(true);
+          } else {
+            // I haven’t finished yet — will decide later
+            console.log('⚠️ Opponent finished before me, storing stats');
           }
         } else if (data?.type === 'cancel') {
           setGameStarted(false);
@@ -103,7 +107,12 @@ export const MultiplayerProvider = ({ children }) => {
     
         if (myFinalStats) {
           decideWinner(myFinalStats, data.stats);
+          setGameOver(true);
+        } else {
+          // I haven’t finished yet — will decide later
+          console.log('⚠️ Opponent finished before me, storing stats');
         }
+
       } else if (data?.type === 'cancel') {
         setGameStarted(false);
       } else {
@@ -140,6 +149,15 @@ export const MultiplayerProvider = ({ children }) => {
     setOpponentFinalStats(null);
     setOpponentProgress(null);
   };
+  // Show winning message
+  useEffect(() => {
+    if (myFinalStats && opponentFinalStats && !gameOver) {
+      console.log('🎯 Running decideWinner from useEffect');
+      decideWinner(myFinalStats, opponentFinalStats);
+      setGameOver(true);
+    }
+  }, [myFinalStats, opponentFinalStats]);
+  
 
   return (
     <MultiplayerContext.Provider
