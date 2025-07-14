@@ -1,11 +1,12 @@
 // src/components/Landing.jsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import MultiplayerPanel from './MultiplayerPanel';
 
 
 /*  Start of Landing page */
 
-const Landing = ({ onStart, setName, onSpeedTest }) => {
+const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
   /* Start of the name personalization feature */
   const [localName, setLocalName] = useState('');
 
@@ -65,6 +66,12 @@ const Landing = ({ onStart, setName, onSpeedTest }) => {
             Time Trial ⚡
           </button>
           </form>
+          {/*           <button
+            onClick={() => onMultiplayerJoin()}
+            className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
+          >
+            Multiplayer Room 🎮
+          </button> */}
           <a
             href="https://forms.gle/v5MPkP3fuWd1W9L36"
             target="_blank"
@@ -73,6 +80,10 @@ const Landing = ({ onStart, setName, onSpeedTest }) => {
           >
             💬 Feature Request / Give Feedback
           </a>
+          <MultiplayerPanel 
+          onConnected={onMultiplayerJoin} // for the player
+          onIncomingConnection={onMultiplayerJoin} // for the host
+          />
           <div className="bg-white/90 backdrop-blur-lg border border-yellow-300 rounded-2xl shadow-xl p-8 max-w-4xl mx-auto mt-8 text-left transition-transform hover:scale-[1.01]">
 
           <h3 className="sm:text-2xl font-bold text-purple-700 mb-4">👋 Welcome to the Typing Tutor!</h3>
