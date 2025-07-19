@@ -3,46 +3,56 @@ import TypingBox from './components/TypingBox';
 import Landing from './components/Landing';
 import StatsPage from './components/StatsPage';
 import SpeedTestPage from './components/SpeedTestPage';
-import { MultiplayerProvider } from './context/MultiplayerContext';
 import MultiplayerRoom from './components/MultiplayerRoom';
+import ConnectionConfirmModal from './components/ConnectionConfirmModal';
+import { MultiplayerProvider, useMultiplayer } from './context/MultiplayerContext';
 
-function App() {
-  const [hasStarted, setHasStarted] = useState(false);
-  const [showStats, setShowStats] = useState(false);
-  const [showMultiplayerRoom, setShowMultiplayerRoom] = useState(false);
-
-
-  // Lifted state
-  const [name, setName] = useState(localStorage.getItem('name') || 'Friend');
-  const [category, setCategory] = useState('classic');
-  const [currentPart, setCurrentPart] = useState(0);
-  const [currentParts, setCurrentParts] = useState({
-    classic: 0,
-    pop: 0,
-    news: 0,
-    stem: 0
-  });
-  const [showSpeedTest, setShowSpeedTest] = useState(false);
+function InnerApp({
+  hasStarted, setHasStarted,
+  showStats, setShowStats,
+  showMultiplayerRoom, setShowMultiplayerRoom,
+  name, setName,
+  category, setCategory,
+  currentPart, setCurrentPart,
+  currentParts, setCurrentParts,
+  showSpeedTest, setShowSpeedTest
+}) {
+  const {
+    opponentName,
+    isConnectionApproved,
+    setIsConnectionApproved
+  } = useMultiplayer();
 
   return (
-    <MultiplayerProvider>
+    <>
       {showMultiplayerRoom ? (
-        <MultiplayerRoom
-          name={name}
-          onComplete={() => setShowMultiplayerRoom(false)} // optional exit/reset
-        />
+        !isConnectionApproved ? (
+          <ConnectionConfirmModal
+            myName={name}
+            opponentName={opponentName}
+            onConfirm={() => setIsConnectionApproved(true)}
+          />
+        ) : (
+          <MultiplayerRoom
+            name={name}
+            onComplete={() => {
+              setShowMultiplayerRoom(false);
+              setIsConnectionApproved(false);
+            }}
+          />
+        )
       ) : showStats ? (
-        <StatsPage 
-          onBack={() => setShowStats(false)} 
+        <StatsPage
+          onBack={() => setShowStats(false)}
           name={name}
         />
       ) : showSpeedTest ? (
-        <SpeedTestPage 
-          name={name} 
+        <SpeedTestPage
+          name={name}
           onComplete={() => {
-            setShowSpeedTest(false); 
+            setShowSpeedTest(false);
             setHasStarted(true);
-          }} 
+          }}
         />
       ) : hasStarted ? (
         <TypingBox
@@ -66,8 +76,47 @@ function App() {
           }}
         />
       )}
+    </>
+  );
+}
+
+function App() {
+  const [hasStarted, setHasStarted] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [showMultiplayerRoom, setShowMultiplayerRoom] = useState(false);
+  const [name, setName] = useState(localStorage.getItem('name') || 'Friend');
+  const [category, setCategory] = useState('classic');
+  const [currentPart, setCurrentPart] = useState(0);
+  const [currentParts, setCurrentParts] = useState({
+    classic: 0,
+    pop: 0,
+    news: 0,
+    stem: 0
+  });
+  const [showSpeedTest, setShowSpeedTest] = useState(false);
+
+  return (
+    <MultiplayerProvider>
+      <InnerApp
+        hasStarted={hasStarted}
+        setHasStarted={setHasStarted}
+        showStats={showStats}
+        setShowStats={setShowStats}
+        showMultiplayerRoom={showMultiplayerRoom}
+        setShowMultiplayerRoom={setShowMultiplayerRoom}
+        name={name}
+        setName={setName}
+        category={category}
+        setCategory={setCategory}
+        currentPart={currentPart}
+        setCurrentPart={setCurrentPart}
+        currentParts={currentParts}
+        setCurrentParts={setCurrentParts}
+        showSpeedTest={showSpeedTest}
+        setShowSpeedTest={setShowSpeedTest}
+      />
     </MultiplayerProvider>
-  );  
+  );
 }
 
 export default App;

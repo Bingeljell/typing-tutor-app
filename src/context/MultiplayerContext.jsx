@@ -18,6 +18,9 @@ export const MultiplayerProvider = ({ children }) => {
   const [gameOver, setGameOver] = useState(false);
   const [youWon, setYouWon] = useState(null);
   const onIncomingConnectionRef = useRef(null);
+  const [myName, setMyName] = useState('');
+  const [opponentName, setOpponentName] = useState('');
+  const [isConnectionApproved, setIsConnectionApproved] = useState(false);
   const registerOnIncomingConnection = (callback) => {
     console.log("📡 Host registered onIncomingConnection callback");
     onIncomingConnectionRef.current = callback;
@@ -71,6 +74,8 @@ export const MultiplayerProvider = ({ children }) => {
             if (myFinalStats) {
               decideWinner(myFinalStats, data.stats);
               setGameOver(true);
+          } else if (data?.type === 'name') {
+            setOpponentName(data.value);
           } else {
             // I haven’t finished yet — will decide later
             console.log('⚠️ Opponent finished before me, storing stats');
@@ -99,6 +104,8 @@ export const MultiplayerProvider = ({ children }) => {
       setConn(connection);
       if (onConnected) onConnected(); // ✅ trigger room switch
     });
+    connection.send({ type: 'name', value: myName });
+
     connection.on('data', (data) => {
       if (data?.type === 'ready') {
         setOpponentReady(true);
@@ -108,6 +115,8 @@ export const MultiplayerProvider = ({ children }) => {
         if (myFinalStats) {
           decideWinner(myFinalStats, data.stats);
           setGameOver(true);
+        } else if (data?.type === 'name') {
+          setOpponentName(data.value);
         } else {
           // I haven’t finished yet — will decide later
           console.log('⚠️ Opponent finished before me, storing stats');
@@ -180,6 +189,12 @@ export const MultiplayerProvider = ({ children }) => {
         youWon,
         registerOnIncomingConnection,
         resetMatch,
+        myName,
+        setMyName,
+        opponentName,
+        setOpponentName,
+        isConnectionApproved,
+        setIsConnectionApproved,
       }}
     >
       {children}

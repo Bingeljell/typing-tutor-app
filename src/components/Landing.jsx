@@ -25,6 +25,15 @@ const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
       onStart();
     }
   };
+  const handleMultiplayerJoin = () => {
+    if (!localName.trim()) {
+      alert("Please enter your name before joining Multiplayer!");
+      return;
+    }
+    localStorage.setItem('name', localName);
+    setName(localName);
+    onMultiplayerJoin();
+  };
 
     return (
       //<div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100 text-center p-6 font-sans">
@@ -81,8 +90,8 @@ const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
             💬 Feature Request / Give Feedback
           </a>
           <MultiplayerPanel 
-          onConnected={onMultiplayerJoin} // for the player
-          onIncomingConnection={onMultiplayerJoin} // for the host
+          onConnected={handleMultiplayerJoin} // for the player
+          onIncomingConnection={handleMultiplayerJoin} // for the host
           />
           <div className="bg-white/90 backdrop-blur-lg border border-yellow-300 rounded-2xl shadow-xl p-8 max-w-4xl mx-auto mt-8 text-left transition-transform hover:scale-[1.01]">
 
