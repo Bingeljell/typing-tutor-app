@@ -11,6 +11,7 @@ const MultiplayerRoom = ({ onComplete, name }) => {
     sendProgress,
     opponentProgress,
     signalReady,
+    conn,
     signalDone,
     ready,
     opponentReady,
@@ -19,9 +20,18 @@ const MultiplayerRoom = ({ onComplete, name }) => {
     gameStarted,
     setGameStarted,
     gameOver,
+    setGameOver,
     youWon,
     resetMatch,
+    myFinalStats,
+    opponentFinalStats,
+    decideWinner,
   } = useMultiplayer();
+  console.log("🎯 gameOver:", gameOver);
+  console.log("👤 opponentProgress:", opponentProgress);
+  console.log("🏆 youWon:", youWon);
+  console.log("🎯 myFinalStats:", myFinalStats);
+  console.log("🎯 opponentFinalStats:", opponentFinalStats);
   
   const normalize = (str) =>
     str.replace(/['’‘]/g, "'").replace(/["”“]/g, '"');
@@ -39,18 +49,6 @@ const MultiplayerRoom = ({ onComplete, name }) => {
   const [wpm, setWpm] = useState(0);
 
   
-
-  // Multiplayer countdown feature
-  useEffect(() => {
-      if (ready && opponentReady && !gameStarted) {
-        console.log("🎬 Both ready — starting countdown...");
-        setBothReady(true);
-        setTimeout(() => {
-          setGameStarted(true);
-        }, 3000); // 3...2...1...Go!
-      }
-    }, [ready, opponentReady]);
-
   // Track input against target for accuracy 
 
   const renderText = () => {
@@ -108,6 +106,18 @@ const handleChange = (e) => {
     accuracy: liveAccuracy,
     wpm: liveWPM,
   });
+  if (gameStarted) {
+    sendProgress({
+      inputLength: normalizedInput.length,
+      accuracy: liveAccuracy,
+      wpm: liveWPM,
+    });
+  }
+  console.log("📤 sending progress:", {
+    inputLength: normalizedInput.length,
+    accuracy: liveAccuracy,
+    wpm: liveWPM,
+  });  
 
   if (value.length >= target.length) {
     setIsComplete(true);
@@ -133,6 +143,35 @@ const handleChange = (e) => {
     setStartTime(null);
   };
 
+  // Final stats for both peer / host
+  useEffect(() => {
+    if (myFinalStats && opponentFinalStats && !gameOver) {
+      console.log('🎯 Running decideWinner from useEffect');
+      decideWinner(myFinalStats, opponentFinalStats);
+      setGameOver(true);
+    }
+  }, [myFinalStats, opponentFinalStats]);
+  
+
+  // Multiplayer countdown feature
+  useEffect(() => {
+      console.log("🔄 Ready States", { ready, opponentReady, gameStarted });
+      if (ready && opponentReady && !gameStarted) {
+        console.log("🎬 Both ready — starting countdown...");
+        setBothReady(true);
+        setTimeout(() => {
+          setGameStarted(true);
+        }, 3000); // 3...2...1...Go!
+      }
+    }, [ready, opponentReady]);
+
+  console.log("🔍 multiplayer state:", {
+    ready,
+    opponentReady,
+    gameStarted,
+    connOpen: conn?.open,
+  });
+    
 
   // Load the page
   return (
@@ -155,9 +194,10 @@ const handleChange = (e) => {
           </div>
         </div>
 
-        {!ready && (
-            <button onClick={signalReady}>I’m Ready</button> // I'm Ready button
-          )}
+        {!ready && !gameStarted && (
+          <button onClick={signalReady}>I’m Ready</button>
+        )}
+
         <input
           ref={inputRef}
           type="text"
@@ -171,6 +211,7 @@ const handleChange = (e) => {
               Starting in 3... 2... 1...
             </div>
           )}
+        {console.log("🟡 opponentProgress", opponentProgress)}
         {opponentProgress && (
           <div className="mt-4 text-sm text-gray-600">
             <p>👤 Opponent progress:</p>

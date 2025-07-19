@@ -2,6 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import MultiplayerPanel from './MultiplayerPanel';
+import HostMultiplayerListener from './HostMultiplayerListener';
+import HostMatchRequestModal from './HostMatchRequestModal';
+import { useMultiplayer } from '../context/MultiplayerContext';
+import { useNavigate } from 'react-router-dom';
+
 
 
 /*  Start of Landing page */
@@ -26,14 +31,25 @@ const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
     }
   };
   const handleMultiplayerJoin = () => {
-    if (!localName.trim()) {
+    const nameToSave = localName?.trim() || localStorage.getItem('name') || '';
+    if (!nameToSave) {
       alert("Please enter your name before joining Multiplayer!");
       return;
     }
-    localStorage.setItem('name', localName);
-    setName(localName);
-    onMultiplayerJoin();
+    localStorage.setItem('name', nameToSave);
+    if (setName) setName(nameToSave);
   };
+  
+
+  const {
+    peerId,
+    pendingConnection,
+    pendingPeerName,
+    setPendingConnection,
+    setPendingPeerName
+  } = useMultiplayer();
+  
+  const navigate = useNavigate();
 
     return (
       //<div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100 text-center p-6 font-sans">
@@ -93,6 +109,7 @@ const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
           onConnected={handleMultiplayerJoin} // for the player
           onIncomingConnection={handleMultiplayerJoin} // for the host
           />
+          <HostMultiplayerListener />
           <div className="bg-white/90 backdrop-blur-lg border border-yellow-300 rounded-2xl shadow-xl p-8 max-w-4xl mx-auto mt-8 text-left transition-transform hover:scale-[1.01]">
 
           <h3 className="sm:text-2xl font-bold text-purple-700 mb-4">👋 Welcome to the Typing Tutor!</h3>
@@ -121,12 +138,20 @@ const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
           </ul>
         </div>
 
-        {/* <button
-          onClick={onStart}
-          className="mt-10 bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
-        >
-          🚀 Start Typing Adventure
-        </button> */}
+        {pendingConnection && (
+          <HostMatchRequestModal
+            peerName={pendingPeerName}
+            onAccept={() => {
+              setPendingConnection(false);
+              navigate(`/multiplayer/${peerId}`);
+            }}
+            onDecline={() => {
+              setPendingConnection(false);
+              setPendingPeerName('');
+            }}
+          />
+        )}
+
 
         
        </div>

@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState, useRef } from 'r
 import Peer from 'peerjs';
 
 const MultiplayerContext = createContext();
-
 export const useMultiplayer = () => useContext(MultiplayerContext);
 
 export const MultiplayerProvider = ({ children }) => {
@@ -17,123 +16,53 @@ export const MultiplayerProvider = ({ children }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [youWon, setYouWon] = useState(null);
-  const onIncomingConnectionRef = useRef(null);
+  const [myFinalStats, setMyFinalStats] = useState(null);
+  const [opponentFinalStats, setOpponentFinalStats] = useState(null);
   const [myName, setMyName] = useState('');
   const [opponentName, setOpponentName] = useState('');
+  const [pendingConnection, setPendingConnection] = useState(false);
+  const [pendingPeerName, setPendingPeerName] = useState('');
   const [isConnectionApproved, setIsConnectionApproved] = useState(false);
+  const [peerReady, setPeerReady] = useState(false);
+  const onIncomingConnectionRef = useRef(null);
+
   const registerOnIncomingConnection = (callback) => {
     console.log("📡 Host registered onIncomingConnection callback");
     onIncomingConnectionRef.current = callback;
   };
 
-  const [myFinalStats, setMyFinalStats] = useState(null);
-  const [opponentFinalStats, setOpponentFinalStats] = useState(null);
-
   const signalReady = () => {
+    console.log("✅ signalReady() called — sending READY");
     setReady(true);
-    conn?.send({ type: 'ready' });
+    if (conn && conn.open) {
+      console.log("📣 signalReady() — conn is open, sending READY");
+      conn.send({ type: 'ready' }); // ✅ This line already exists
+    } else {
+      console.warn("❌ signalReady() — conn not open, cannot send");
+    }
   };
-  
+
   const signalDone = (stats) => {
-    setMyFinalStats(stats); // { wpm, accuracy }
-    conn?.send({ type: 'done', stats });
-    if (opponentFinalStats) {                      
+    setMyFinalStats(stats);
+    if (conn && conn.open) {
+      console.log("📤 sending DONE to opponent:", stats);
+      conn.send({ type: 'done', stats });
+    } else {
+      console.warn("❌ Cannot send DONE — no open connection");
+    }
+    if (opponentFinalStats) {
       decideWinner(stats, opponentFinalStats);
       setGameOver(true);
     }
-    console.log('🏁 signalDone called', stats)
-
-  };
-  // Initialize PeerJS
-  useEffect(() => {
-    const newPeer = new Peer();
-  
-    newPeer.on('open', (id) => {
-      setPeerId(id);
-      setPeer(newPeer);
-      console.log("🎉 Host PeerJS ready. My ID is", id);
-    });
-    
-
-  
-    newPeer.on('connection', (connection) => {
-      console.log("✅ Host received an incoming connection from", connection.peer);
-      setConn(connection);
-      
-      if (onIncomingConnectionRef.current) {
-        console.log("⚡ Triggering onIncomingConnection callback");
-        onIncomingConnectionRef.current(); // ✅ trigger UI switch for host
-      }
-      connection.on('data', (data) => {
-        if (data?.type === 'ready') {
-          setOpponentReady(true);
-        } else if (data?.type === 'done') {
-          setOpponentFinalStats(data.stats);
-          console.log('📩 received done', data.stats);
-      
-            if (myFinalStats) {
-              decideWinner(myFinalStats, data.stats);
-              setGameOver(true);
-          } else if (data?.type === 'name') {
-            setOpponentName(data.value);
-          } else {
-            // I haven’t finished yet — will decide later
-            console.log('⚠️ Opponent finished before me, storing stats');
-          }
-        } else if (data?.type === 'cancel') {
-          setGameStarted(false);
-        } else {
-          setOpponentProgress(data);
-        }
-      });
-      
-    });
-  
-    return () => {
-      newPeer.destroy();
-    };
-  }, []);
-  
-
-  const connectToPeer = (id, onConnected) => {
-    if (!peer) return;
-    console.log('Attempting to connect to:', id);
-    const connection = peer.connect(id);
-    console.log('Connection established with', id);
-    connection.on('open', () => {
-      setConn(connection);
-      if (onConnected) onConnected(); // ✅ trigger room switch
-    });
-    connection.send({ type: 'name', value: myName });
-
-    connection.on('data', (data) => {
-      if (data?.type === 'ready') {
-        setOpponentReady(true);
-      } else if (data?.type === 'done') {
-        setOpponentFinalStats(data.stats);
-    
-        if (myFinalStats) {
-          decideWinner(myFinalStats, data.stats);
-          setGameOver(true);
-        } else if (data?.type === 'name') {
-          setOpponentName(data.value);
-        } else {
-          // I haven’t finished yet — will decide later
-          console.log('⚠️ Opponent finished before me, storing stats');
-        }
-
-      } else if (data?.type === 'cancel') {
-        setGameStarted(false);
-      } else {
-        setOpponentProgress(data);
-      }
-    });
-    
+    console.log('🏁 signalDone called', stats);
   };
 
   const sendProgress = (progressData) => {
     if (conn && conn.open) {
+      console.log("📤 sending progress:", progressData);
       conn.send(progressData);
+    } else {
+      console.warn("❌ Cannot send progress — no open connection");
     }
   };
 
@@ -146,7 +75,7 @@ export const MultiplayerProvider = ({ children }) => {
     setYouWon(myScore >= theirScore);
     setGameOver(true);
   };
-  
+
   const resetMatch = () => {
     setGameStarted(false);
     setGameOver(false);
@@ -158,7 +87,122 @@ export const MultiplayerProvider = ({ children }) => {
     setOpponentFinalStats(null);
     setOpponentProgress(null);
   };
-  // Show winning message
+
+  useEffect(() => {
+    const newPeer = new Peer();
+  
+    newPeer.on('open', (id) => {
+      setPeerId(id);
+      setPeer(newPeer);
+      console.log("🎉 Host PeerJS ready. My ID is", id);
+      setPeerReady(true);
+    });
+  
+    newPeer.on('connection', (connection) => {
+      console.log("✅ Host received an incoming connection from", connection.peer);
+  
+      // ✅ Delay assigning conn until connection is actually open
+      connection.on('open', () => {
+        console.log("🚀 Host's incoming connection is now open");
+        setConn(connection);
+      });
+  
+      // ✅ Still listen for data even before open
+      connection.on('data', (data) => {
+        console.log("📨 Host received data from peer:", data);
+  
+        if (data?.type === 'ready') {
+          console.log("✅ Host received 'ready' from peer");
+          setOpponentReady(true);
+  
+        } else if (data?.type === 'done') {
+          setOpponentFinalStats(data.stats);
+          console.log('📩 received done', data.stats);
+  
+          if (myFinalStats) {
+            decideWinner(myFinalStats, data.stats);
+            setGameOver(true);
+          } else {
+            console.log('⚠️ Opponent finished before me, storing stats');
+          }
+  
+        } else if (data?.type === 'name') {
+          setOpponentName(data.value);
+          setPendingConnection(true);
+          setPendingPeerName(data.value);
+          console.log("🚨 Setting host modal with peer name:", data.value);
+  
+        } else if (data?.type === 'cancel') {
+          setGameStarted(false);
+  
+        } else {
+          setOpponentProgress(data); // WPM, accuracy
+        }
+      });
+  
+      // Trigger confirmation modal (host-side)
+      if (onIncomingConnectionRef.current) {
+        console.log("⚡ Triggering onIncomingConnection callback");
+        onIncomingConnectionRef.current();
+      }
+    });
+  
+    return () => {
+      newPeer.destroy();
+    };
+  }, []);
+  
+
+  const connectToPeer = (id, onConnected) => {
+    if (!peer) {
+      console.warn("❌ PeerJS instance not ready yet");
+      return;
+    }
+
+    console.log('🧩 connectToPeer called with ID:', id);
+    const connection = peer.connect(id);
+
+    connection.on('open', () => {
+      console.log("✅ Connection opened with host:", id);
+      setConn(connection);
+      if (onConnected) onConnected();
+      console.log("🎯 Peer is sending name to host:", myName);
+      connection.send({ type: 'name', value: myName });
+      console.log("✅ Name message sent to host");
+    });
+
+    connection.on('data', (data) => {
+      console.log("📩 Peer received data:", data);
+      if (data?.type === 'ready') {
+        console.log("✅ Peer received 'ready' from host");
+        setOpponentReady(true);
+      } else if (data?.type === 'done') {
+        setOpponentFinalStats(data.stats);
+        console.log('📩 received done', data.stats);
+        if (myFinalStats) {
+          decideWinner(myFinalStats, data.stats);
+          setGameOver(true);
+        } else {
+          console.log('⚠️ Opponent finished before me, storing stats');
+        }
+      } else if (data?.type === 'cancel') {
+        setGameStarted(false);
+      } else {
+        setOpponentProgress(data);
+      }
+    });
+
+    connection.on('error', (err) => {
+      console.error("❌ Error during connection:", err);
+    });
+
+    connection.on('close', () => {
+      console.warn("🔌 Connection closed by host");
+    });
+
+    return connection;
+  };
+
   useEffect(() => {
     if (myFinalStats && opponentFinalStats && !gameOver) {
       console.log('🎯 Running decideWinner from useEffect');
@@ -166,7 +210,6 @@ export const MultiplayerProvider = ({ children }) => {
       setGameOver(true);
     }
   }, [myFinalStats, opponentFinalStats]);
-  
 
   return (
     <MultiplayerContext.Provider
@@ -186,6 +229,7 @@ export const MultiplayerProvider = ({ children }) => {
         gameStarted,
         setGameStarted,
         gameOver,
+        setGameOver,
         youWon,
         registerOnIncomingConnection,
         resetMatch,
@@ -195,6 +239,16 @@ export const MultiplayerProvider = ({ children }) => {
         setOpponentName,
         isConnectionApproved,
         setIsConnectionApproved,
+        pendingConnection,
+        pendingPeerName,
+        setPendingConnection,
+        setPendingPeerName,
+        peerReady,
+        conn,
+        myFinalStats,
+        opponentFinalStats,
+        decideWinner,
+        
       }}
     >
       {children}

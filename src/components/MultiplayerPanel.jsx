@@ -32,15 +32,20 @@ export default function MultiplayerPanel({ onConnected, onIncomingConnection }) 
       <h2 className="text-xl font-bold mb-2">Multiplayer</h2>
 
       <div className="mb-4">
-        <p className="mb-1 text-sm">Your Room Code:</p>
+      <p className="mb-1 text-sm">Invite your friend with this link:</p>
         <div className="bg-gray-100 p-2 rounded flex justify-between items-center">
-          <span className="font-mono text-sm">{peerId || 'Loading...'}</span>
+          <span className="font-mono text-xs truncate max-w-[200px]">{peerId ? `${window.location.origin}/multiplayer/${peerId}` : 'Loading...'}</span>
           <button
             className="text-blue-500 text-xs ml-2"
-            onClick={handleCopy}
+            onClick={() => {
+              const link = `${window.location.origin}/multiplayer/${peerId}`;
+              navigator.clipboard.writeText(link);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }}
             disabled={!peerId}
           >
-            {copied ? 'Copied!' : 'Copy'}
+            {copied ? 'Copied!' : 'Copy Link'}
           </button>
         </div>
       </div>
