@@ -35,7 +35,8 @@ const MultiplayerRoom = ({ onComplete, name }) => {
   
   const normalize = (str) =>
     str.replace(/['’‘]/g, "'").replace(/["”“]/g, '"');
-  
+  const { readyNotification } = useMultiplayer();
+
   
   const [target, setTarget] = useState(`When you have eliminated the impossible, whatever remains, however improbable, must be the truth.`);
 
@@ -193,7 +194,11 @@ const handleChange = (e) => {
             {renderText()}
           </div>
         </div>
-
+        {readyNotification && (
+          <div className="text-blue-700 font-semibold mb-2">
+            {readyNotification}
+          </div>
+        )}  
         {!ready && !gameStarted && (
           <button onClick={signalReady}>I’m Ready</button>
         )}
@@ -203,7 +208,8 @@ const handleChange = (e) => {
           type="text"
           value={input}
           onChange={handleChange}
-          disabled={isComplete}
+          
+          disabled={!gameStarted || isComplete}
           className="w-full border p-2 rounded mb-4"
         />
         {bothReady && !gameStarted && (

@@ -25,6 +25,8 @@ export const MultiplayerProvider = ({ children }) => {
   const [isConnectionApproved, setIsConnectionApproved] = useState(false);
   const [peerReady, setPeerReady] = useState(false);
   const onIncomingConnectionRef = useRef(null);
+  const [readyNotification, setReadyNotification] = useState(null);
+
 
   const registerOnIncomingConnection = (callback) => {
     console.log("📡 Host registered onIncomingConnection callback");
@@ -35,8 +37,9 @@ export const MultiplayerProvider = ({ children }) => {
     console.log("✅ signalReady() called — sending READY");
     setReady(true);
     if (conn && conn.open) {
+      conn.send({ type: 'ready', name: myName }); // send name and ready
       console.log("📣 signalReady() — conn is open, sending READY");
-      conn.send({ type: 'ready' }); // ✅ This line already exists
+      
     } else {
       console.warn("❌ signalReady() — conn not open, cannot send");
     }
@@ -114,6 +117,12 @@ export const MultiplayerProvider = ({ children }) => {
         if (data?.type === 'ready') {
           console.log("✅ Host received 'ready' from peer");
           setOpponentReady(true);
+
+          if (data.name) {
+            setOpponentName(data.name);
+            setReadyNotification(`${data.name} is ready`);
+            setTimeout(() => setReadyNotification(null), 3000); // Clear after 3 sec
+          }
   
         } else if (data?.type === 'done') {
           setOpponentFinalStats(data.stats);
@@ -176,6 +185,11 @@ export const MultiplayerProvider = ({ children }) => {
       if (data?.type === 'ready') {
         console.log("✅ Peer received 'ready' from host");
         setOpponentReady(true);
+        if (data.name) {
+          setOpponentName(data.name);
+          setReadyNotification(`${data.name} is ready`);
+          setTimeout(() => setReadyNotification(null), 3000); 
+        }
       } else if (data?.type === 'done') {
         setOpponentFinalStats(data.stats);
         console.log('📩 received done', data.stats);
@@ -248,6 +262,8 @@ export const MultiplayerProvider = ({ children }) => {
         myFinalStats,
         opponentFinalStats,
         decideWinner,
+        readyNotification,
+        setReadyNotification,
         
       }}
     >
