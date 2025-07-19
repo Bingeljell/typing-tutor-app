@@ -50,7 +50,7 @@ export default function MultiplayerPanel({ onConnected, onIncomingConnection }) 
         </div>
       </div>
 
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <input
           type="text"
           placeholder="Enter friend's code"
@@ -68,7 +68,7 @@ export default function MultiplayerPanel({ onConnected, onIncomingConnection }) 
         >
           Join Game
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
