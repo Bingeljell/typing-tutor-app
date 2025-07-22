@@ -281,6 +281,11 @@ const handleChange = (e) => {
                 <option key={id} value={id}>{label}</option>
               ))}
           </select>
+          {!isHost && (
+            <div className="text-xs text-gray-500 italic mt-1">
+              👀 The host will pick the passage.
+            </div>
+          )}  
 
           {/* Hint if author is not selected */}
           {!selectedAuthor && (
@@ -318,7 +323,7 @@ const handleChange = (e) => {
         {!ready && !gameStarted && (
           <button onClick={signalReady}
           disabled={!target}
-          className={`px-4 py-2 rounded font-bold text-white transition-all ${
+          className={`px-4 py-2 mb-4 rounded font-bold text-white transition-all ${
             target ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
           }`}
           >I’m Ready</button>
@@ -388,6 +393,12 @@ const handleChange = (e) => {
                 setSelectedPassageId('');
                 setMultiplayerTarget(null);
                 setMultiplayerMeta(null); 
+
+                // 🔔 Notify peer
+                if (isHost && conn?.open) {
+                  conn.send({ type: 'rematch-request', name });
+                  console.log("📣 Sent rematch request to peer");
+                }
               }}
               className="mt-4 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
             >

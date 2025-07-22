@@ -132,7 +132,23 @@ export const MultiplayerProvider = ({ children }) => {
             setReadyNotification(`${data.name} is ready`);
             setTimeout(() => setReadyNotification(null), 3000); // Clear after 3 sec
           }  
-        } else if (data?.type === 'target') {
+        } else if (data?.type === 'rematch-request') {
+          console.log("🔁 Received rematch request from opponent");
+          resetMatch();
+          setInput('');
+          setIsComplete(false);
+          setStartTime(null);
+          setAccuracy(0);
+          setWpm(0);
+          setMultiplayerTarget(null);
+          setMultiplayerMeta(null);
+        
+          // Optional: toast or text UI to show rematch incoming
+          setReadyNotification(`${data.name} wants a rematch`);
+          setTimeout(() => setReadyNotification(null), 3000);
+        }
+        
+        else if (data?.type === 'target') {
           console.log ("🎯 Received target sync from host");
           setMultiplayerTarget(data.value.text);
           setMultiplayerMeta({ author: data.value.author, label: data.value.label });
@@ -205,6 +221,21 @@ export const MultiplayerProvider = ({ children }) => {
         console.log("🧪 🧪 PEER received handshake test:", data);
       }
       
+      else if (data?.type === 'rematch-request') {
+        console.log("🔁 Received rematch request from opponent");
+        resetMatch();
+        setInput('');
+        setIsComplete(false);
+        setStartTime(null);
+        setAccuracy(0);
+        setWpm(0);
+        setMultiplayerTarget(null);
+        setMultiplayerMeta(null);
+      
+        // Optional: toast or text UI to show rematch incoming
+        setReadyNotification(`${data.name} wants a rematch`);
+        setTimeout(() => setReadyNotification(null), 3000);
+      }
       
       else if (data?.type === 'target') {
         console.log ("🎯 Received target sync from host");
