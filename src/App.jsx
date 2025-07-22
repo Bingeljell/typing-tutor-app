@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { MultiplayerProvider } from './context/MultiplayerContext';
+import React, { useState } from 'react';
 
 import Landing from './components/Landing';
 import TypingBox from './components/TypingBox';
@@ -29,7 +30,32 @@ export default App;
 
 const TypingBoxWrapper = () => {
   const name = localStorage.getItem('name') || 'Friend';
-  return <TypingBox name={name} />;
+  
+
+  // 👇 Real state so buttons actually work
+  const [category, setCategory] = useState(
+    localStorage.getItem('resumeCategory') || 'classic');
+  const [currentPart, setCurrentPart] = useState(
+    parseInt(localStorage.getItem('resumePart') || '0', 10));
+  const [currentParts, setCurrentParts] = useState({
+    classic: 0,
+    pop: 0,
+    news: 0,
+    stem: 0
+  });
+
+  return (
+    <TypingBox
+      name={name}
+      category={category}
+      setCategory={setCategory}
+      currentPart={currentPart}
+      setCurrentPart={setCurrentPart}
+      currentParts={currentParts}
+      setCurrentParts={setCurrentParts}
+      onShowStats={() => {}}
+    />
+  );
 };
 
 const SpeedTestWrapper = () => {
@@ -37,7 +63,7 @@ const SpeedTestWrapper = () => {
   return (
     <SpeedTestPage
       name={name}
-      onComplete={() => (window.location.href = '/solo')}
+      onComplete={() => (window.location.href = '/speed')}
     />
   );
 };
@@ -47,7 +73,7 @@ const StatsWrapper = () => {
   return (
     <StatsPage
       name={name}
-      onBack={() => (window.location.href = '/solo')}
+      onBack={() => (window.location.href = '/stats')}
     />
   );
 };

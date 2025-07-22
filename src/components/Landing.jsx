@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 /*  Start of Landing page */
 
-const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
+const Landing = () => {
   /* Start of the name personalization feature */
   const [localName, setLocalName] = useState('');
 
@@ -26,8 +26,7 @@ const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
     e.preventDefault();
     if (localName.trim()) {
       localStorage.setItem('name', localName);
-      setName(localName);
-      onStart();
+      navigate('/solo')
     }
   };
   const handleMultiplayerJoin = () => {
@@ -80,12 +79,20 @@ const Landing = ({ onStart, setName, onSpeedTest, onMultiplayerJoin }) => {
           />
           <button
             type="submit"
+            /* onClick={() => navigate('/solo')} */
+            onClick={(e) => {
+              e.preventDefault();
+              if (localName.trim()) {
+                localStorage.setItem('name', localName);
+                navigate('/solo');
+              }
+            }}
             className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
           >
             🚀 Start Typing Adventure
           </button>
           <button
-            onClick={() => onSpeedTest()}
+            onClick={() => navigate('/speed')}
             className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
           >
             Time Trial ⚡

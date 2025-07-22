@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { calculateAccuracy, calculateWPM } from '../utils/typingUtils';
 import classic from '../data/exercises_classics';
 import pop from '../data/exercises_pop';
@@ -28,7 +29,7 @@ const TypingBox = ({
   const inputRef = useRef(null);
   const datasets = { classic, pop, news, stem };
   const targetExercise = datasets[category][currentPart];
-  
+  const navigate = useNavigate();
   if (!targetExercise) {
     return <div className="text-center text-red-500">Exercise not found. Please restart.</div>;
   }
@@ -362,9 +363,9 @@ const TypingBox = ({
               </button>
               <button
                 onClick={handleNextExercise}
-                disabled={!isComplete}
+                disabled={!isComplete && !progress[targetExercise.id]?.completed}
                 className={`px-3 py-1 text-xs rounded font-semibold transition-colors ${
-                  isComplete
+                  isComplete || progress[targetExercise.id]?.completed
                     ? 'bg-blue-600 text-white hover:bg-blue-500'
                     : 'bg-blue-300 text-white cursor-not-allowed'
                 }`}
@@ -533,7 +534,11 @@ const TypingBox = ({
           {/* Secondary Actions */}
           <div className="flex flex-wrap justify-center gap-3 text-sm">
             <button
-              onClick={onShowStats}
+              onClick={() => {
+                localStorage.setItem('resumeCategory', category);
+                localStorage.setItem('resumePart', currentPart);
+                navigate('/stats');
+              }}  
               className="text-blue-600 underline hover:text-blue-800 transition-colors"
             >
               View My Stats
@@ -557,7 +562,8 @@ const TypingBox = ({
             <button
               onClick={() => {
                 localStorage.removeItem('name');
-                window.location.reload();
+                navigate('/');
+
               }}
               className="px-3 py-1 rounded bg-yellow-100 text-yellow-700 font-semibold hover:bg-yellow-200 transition-colors"
             >

@@ -1,9 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const StatsPage = ({ 
-  onBack, 
   name 
 }) => {
+  const navigate = useNavigate();
   const progress = JSON.parse(localStorage.getItem('progress')) || {};
 
   const entries = Object.entries(progress);
@@ -37,7 +38,7 @@ const StatsPage = ({
       )}
 
       <button
-        onClick={onBack}
+        onClick={() => navigate(-1)}
         className="mt-6 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
       >
         🔙 Back to Typing

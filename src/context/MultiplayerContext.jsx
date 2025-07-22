@@ -133,16 +133,8 @@ export const MultiplayerProvider = ({ children }) => {
             setTimeout(() => setReadyNotification(null), 3000); // Clear after 3 sec
           }  
         } else if (data?.type === 'rematch-request') {
-          console.log("🔁 Received rematch request from opponent");
+          console.log("🔁 Received rematch request from opponent", data.name);
           resetMatch();
-          setInput('');
-          setIsComplete(false);
-          setStartTime(null);
-          setAccuracy(0);
-          setWpm(0);
-          setMultiplayerTarget(null);
-          setMultiplayerMeta(null);
-        
           // Optional: toast or text UI to show rematch incoming
           setReadyNotification(`${data.name} wants a rematch`);
           setTimeout(() => setReadyNotification(null), 3000);
@@ -220,20 +212,13 @@ export const MultiplayerProvider = ({ children }) => {
       } else if (data?.type === 'debug-test') {
         console.log("🧪 🧪 PEER received handshake test:", data);
       }
-      
+
       else if (data?.type === 'rematch-request') {
-        console.log("🔁 Received rematch request from opponent");
-        resetMatch();
-        setInput('');
-        setIsComplete(false);
-        setStartTime(null);
-        setAccuracy(0);
-        setWpm(0);
-        setMultiplayerTarget(null);
-        setMultiplayerMeta(null);
-      
+        console.log("🔁 Received rematch request from opponent", data.name);
+        resetMatch();      
         // Optional: toast or text UI to show rematch incoming
         setReadyNotification(`${data.name} wants a rematch`);
+        console.log("📢 Showing rematch request notification");
         setTimeout(() => setReadyNotification(null), 3000);
       }
       
