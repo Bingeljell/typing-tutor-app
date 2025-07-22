@@ -15,6 +15,8 @@ export default function MultiplayerWrapper() {
     myName,
     setMyName,
     peerReady,
+    isHostUser,
+    setIsHostUser,
     
   } = useMultiplayer();
 
@@ -30,6 +32,25 @@ export default function MultiplayerWrapper() {
       setMyName(localName);
     }
   }, [localName]);
+  
+  //isHost or not
+  useEffect(() => {
+    // peerId must be defined first
+    if (typeof peerId !== 'undefined') {
+      const stored = localStorage.getItem('isHost');
+      if (stored === null) {
+        const isHost = !peerId;
+        localStorage.setItem('isHost', isHost ? 'true' : 'false');
+        setIsHostUser(isHost);
+        console.log("🧭 Role locked in:", isHost ? 'Host' : 'Peer');
+      } else {
+        const isHost = stored === 'true';
+        setIsHostUser(isHost);
+        console.log("🧭 Restored role from storage:", isHost ? 'Host' : 'Peer');
+      }
+    }
+  }, [peerId]);
+  
 
   useEffect(() => {
     if (peerId && myName && peerReady) {
@@ -49,6 +70,7 @@ export default function MultiplayerWrapper() {
       />
     );
   }
+  console.log("🧭 Final isHostUser before render:", isHostUser);
 
   return <MultiplayerRoom name={localName} onComplete={() => window.location.href = '/'} />;
 }

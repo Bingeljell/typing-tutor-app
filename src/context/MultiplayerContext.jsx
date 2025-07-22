@@ -26,6 +26,10 @@ export const MultiplayerProvider = ({ children }) => {
   const [peerReady, setPeerReady] = useState(false);
   const onIncomingConnectionRef = useRef(null);
   const [readyNotification, setReadyNotification] = useState(null);
+  const [multiplayerTarget, setMultiplayerTarget] = useState(null);
+  const [multiplayerMeta, setMultiplayerMeta] = useState(null); // title + label
+  const [isHostUser, setIsHostUser] = useState(false);
+
 
 
   const registerOnIncomingConnection = (callback) => {
@@ -108,6 +112,11 @@ export const MultiplayerProvider = ({ children }) => {
       connection.on('open', () => {
         console.log("🚀 Host's incoming connection is now open");
         setConn(connection);
+        // 👇 TEMP test
+        setTimeout(() => {
+          console.log("🧪 Host sending handshake TEST message to peer...");
+          connection.send({ type: 'debug-test', msg: 'Hello from host' });
+        }, 1000);
       });
   
       // ✅ Still listen for data even before open
@@ -122,12 +131,14 @@ export const MultiplayerProvider = ({ children }) => {
             setOpponentName(data.name);
             setReadyNotification(`${data.name} is ready`);
             setTimeout(() => setReadyNotification(null), 3000); // Clear after 3 sec
-          }
-  
+          }  
+        } else if (data?.type === 'target') {
+          console.log ("🎯 Received target sync from host");
+          setMultiplayerTarget(data.value.text);
+          setMultiplayerMeta({ author: data.value.author, label: data.value.label });
         } else if (data?.type === 'done') {
           setOpponentFinalStats(data.stats);
           console.log('📩 received done', data.stats);
-  
           if (myFinalStats) {
             decideWinner(myFinalStats, data.stats);
             setGameOver(true);
@@ -190,6 +201,15 @@ export const MultiplayerProvider = ({ children }) => {
           setReadyNotification(`${data.name} is ready`);
           setTimeout(() => setReadyNotification(null), 3000); 
         }
+      } else if (data?.type === 'debug-test') {
+        console.log("🧪 🧪 PEER received handshake test:", data);
+      }
+      
+      
+      else if (data?.type === 'target') {
+        console.log ("🎯 Received target sync from host");
+        setMultiplayerTarget(data.value.text);
+        setMultiplayerMeta({ author: data.value.author, label: data.value.label });
       } else if (data?.type === 'done') {
         setOpponentFinalStats(data.stats);
         console.log('📩 received done', data.stats);
@@ -264,6 +284,12 @@ export const MultiplayerProvider = ({ children }) => {
         decideWinner,
         readyNotification,
         setReadyNotification,
+        multiplayerTarget,
+        setMultiplayerTarget,
+        multiplayerMeta,
+        setMultiplayerMeta,
+        isHostUser,
+        setIsHostUser,
         
       }}
     >

@@ -3,6 +3,10 @@ import { calculateAccuracy, calculateWPM } from '../utils/typingUtils';
 import { motion } from 'framer-motion';
 import { diffChars } from 'diff';
 import { useMultiplayer } from '../context/MultiplayerContext';
+import { multiplayerPassages } from '../data/exercises_multiplayer';
+import { useParams } from 'react-router-dom';
+
+
 
 const MultiplayerRoom = ({ onComplete, name }) => {
 
@@ -26,6 +30,12 @@ const MultiplayerRoom = ({ onComplete, name }) => {
     myFinalStats,
     opponentFinalStats,
     decideWinner,
+    multiplayerTarget,
+    setMultiplayerTarget,
+    multiplayerMeta,
+    setMultiplayerMeta,
+    isHostUser
+    
   } = useMultiplayer();
   console.log("🎯 gameOver:", gameOver);
   console.log("👤 opponentProgress:", opponentProgress);
@@ -39,6 +49,8 @@ const MultiplayerRoom = ({ onComplete, name }) => {
 
   
   const [target, setTarget] = useState(`When you have eliminated the impossible, whatever remains, however improbable, must be the truth.`);
+  const [selectedAuthor, setSelectedAuthor] = useState('');
+  const [selectedPassageId, setSelectedPassageId] = useState('');
 
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -48,7 +60,9 @@ const MultiplayerRoom = ({ onComplete, name }) => {
   
   const [accuracy, setAccuracy] = useState(0);
   const [wpm, setWpm] = useState(0);
-
+  
+  const { peerId } = useParams();
+  const isHost = isHostUser;
   
   // Track input against target for accuracy 
 
@@ -153,6 +167,39 @@ const handleChange = (e) => {
     }
   }, [myFinalStats, opponentFinalStats]);
   
+  // Sync target from host
+  useEffect(() => {
+    if (multiplayerTarget) {
+      console.log("🧩 Applying target to local state:", multiplayerTarget);
+      setTarget(multiplayerTarget);
+    }
+  }, [multiplayerTarget]);
+
+  useEffect(() => {
+    console.log("🔍 useEffect running with values:", {
+      isHost,
+      connExists: !!conn,
+      connOpen: conn?.open,
+      multiplayerTarget,
+      multiplayerMeta,
+    });
+
+    if (isHost && conn?.open && multiplayerTarget && multiplayerMeta) {
+      console.log("📤 Host useEffect sending target to peer", {
+        text: multiplayerTarget,
+        ...multiplayerMeta,
+      });
+  
+      conn.send({
+        type: 'target',
+        value: {
+          text: multiplayerTarget,
+          author: multiplayerMeta.author,
+          label: multiplayerMeta.label,
+        },
+      });
+    }
+  }, [conn, multiplayerTarget, multiplayerMeta, target]);
 
   // Multiplayer countdown feature
   useEffect(() => {
@@ -172,7 +219,10 @@ const handleChange = (e) => {
     gameStarted,
     connOpen: conn?.open,
   });
-    
+  
+  useEffect(() => {
+    console.log("🧭 Role:", isHost ? "Host" : "Peer");
+  }, []);
 
   // Load the page
   return (
@@ -184,7 +234,73 @@ const handleChange = (e) => {
     >
       <div className="w-full max-w-5xl bg-white/90 backdrop-blur-lg border rounded-xl shadow p-8 text-center">
         <h1 className="text-3xl font-bold text-purple-700 mb-4">⚡ Time Trial ⚡</h1>
+        <div className="flex flex-col items-center justify-center gap-2 mb-6">
+
+          {/* Author Dropdown */}
+          <select
+            value={selectedAuthor}
+            onChange={(e) => {
+              setSelectedAuthor(e.target.value);
+              setSelectedPassageId('');
+            }}
+            className="border px-4 py-2 rounded shadow text-sm w-72"
+          >
+            <option value="">📚 Select an Author</option>
+            {Object.entries(multiplayerPassages).map(([id, { title }]) => (
+              <option key={id} value={id}>{title}</option>
+            ))}
+          </select>
+
+          {/* Passage Dropdown */}
+          <select
+            value={selectedPassageId}
+            onChange={(e) => {
+              const pid = e.target.value;
+              setSelectedPassageId(pid);
+              const { text, label } = multiplayerPassages[selectedAuthor].contents[pid];
+              const authorTitle = multiplayerPassages[selectedAuthor].title;
+            
+              // Local target
+              setTarget(text);
+              setMultiplayerTarget(text);
+              setMultiplayerMeta({ author: authorTitle, label });
+            
+              // Send to peer
+              if (isHost && conn?.open) {
+                console.log("📤 Host sending target", { text, author: authorTitle, label });
+                
+              }
+            }}
+            
+            disabled={!selectedAuthor}
+            className={`border px-4 py-2 rounded shadow text-sm w-72 ${!selectedAuthor ? 'bg-gray-100 text-gray-400' : ''}`}
+          >
+            <option value="">📝 Select a Passage</option>
+            {selectedAuthor &&
+              Object.entries(multiplayerPassages[selectedAuthor].contents).map(([id, { label }]) => (
+                <option key={id} value={id}>{label}</option>
+              ))}
+          </select>
+
+          {/* Hint if author is not selected */}
+          {!selectedAuthor && (
+            <div className="text-xs text-gray-500 mt-1">
+              👆 Please select an author first to see available passages.
+            </div>
+          )}
+
+        </div>
+
+
+
         <p className="mb-2 text-gray-700 font-semibold">Welcome, {name}!</p>
+        {/* 🧠 Show selected passage info to both users */}
+        {multiplayerMeta && (
+          <div className="text-sm text-gray-600 mb-2">
+            <span className="font-semibold">Passage Selected:</span>{' '}
+            <span>{multiplayerMeta.author} — {multiplayerMeta.label}</span>
+          </div>
+        )}
         <p className="mb-4 text-gray-600">Type the sentence below as fast and accurately as you can:</p>
         <div className="relative overflow-hidden min-h-[200px] w-full h-24 bg-gray-100 rounded mb-4 border max-w-5xl">
           <div
@@ -200,7 +316,12 @@ const handleChange = (e) => {
           </div>
         )}  
         {!ready && !gameStarted && (
-          <button onClick={signalReady}>I’m Ready</button>
+          <button onClick={signalReady}
+          disabled={!target}
+          className={`px-4 py-2 rounded font-bold text-white transition-all ${
+            target ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+          }`}
+          >I’m Ready</button>
         )}
 
         <input
@@ -233,7 +354,10 @@ const handleChange = (e) => {
           )}
 
         <button
-          onClick={() => (window.location.href = '/')}
+          onClick={() => {
+            localStorage.removeItem('isHost');
+            window.location.href = '/';
+          }}
           className="mb-4 bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 text-white px-6 py-2 rounded shadow hover:brightness-110 transition-all duration-300 font-semibold text-base"
         >
           Back to Main
@@ -260,6 +384,10 @@ const handleChange = (e) => {
                 setStartTime(null);
                 setAccuracy(0);
                 setWpm(0);
+                setSelectedAuthor('');
+                setSelectedPassageId('');
+                setMultiplayerTarget(null);
+                setMultiplayerMeta(null); 
               }}
               className="mt-4 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
             >

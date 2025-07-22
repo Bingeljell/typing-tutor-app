@@ -9,6 +9,7 @@ export default function HostMultiplayerListener() {
   useEffect(() => {
     registerOnIncomingConnection(() => {
       console.log("🚀 Host received connection. Navigating to room...");
+      localStorage.setItem('isHost', 'true');
       navigate(`/multiplayer/${peerId}`);
     });
   }, [peerId]);
