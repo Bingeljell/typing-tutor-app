@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { MultiplayerProvider } from './context/MultiplayerContext';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Landing from './components/Landing';
 import TypingBox from './components/TypingBox';
@@ -9,9 +9,19 @@ import SpeedTestPage from './components/SpeedTestPage'; // aka Time Trial
 import MultiplayerWrapper from './routes/MultiplayerWrapper'; // new file
 
 function App() {
+
+  const AppLogger = () => {
+    const location = useLocation();
+    useEffect(() => {
+      console.log('[App] 📍 Route changed:', location.pathname);
+    }, [location]);
+    return null;
+  };
+  
   return (
     <MultiplayerProvider>
       <BrowserRouter>
+      <AppLogger />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/solo" element={<TypingBoxWrapper />} />
@@ -27,6 +37,8 @@ function App() {
 export default App;
 
 // 🔽 These are the wrapper components for passing name from localStorage
+
+
 
 const TypingBoxWrapper = () => {
   const name = localStorage.getItem('name') || 'Friend';
@@ -60,10 +72,11 @@ const TypingBoxWrapper = () => {
 
 const SpeedTestWrapper = () => {
   const name = localStorage.getItem('name') || 'Friend';
+  const navigate = useNavigate();
   return (
     <SpeedTestPage
       name={name}
-      onComplete={() => (window.location.href = '/speed')}
+      onComplete={() => navigate('/speed')}
     />
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { calculateAccuracy, calculateWPM } from '../utils/typingUtils';
 import { motion } from 'framer-motion';
 import { diffChars } from 'diff';
@@ -18,6 +19,8 @@ const SpeedTestPage = ({ onComplete, name }) => {
     ...news,
     ...stem
   ];
+  
+
 
   const [target, setTarget] = useState('');
   useEffect(() => {
@@ -25,6 +28,7 @@ const SpeedTestPage = ({ onComplete, name }) => {
     setTarget(timeTrialPool[randomIndex].text);
   }, []);
 
+  const navigate = useNavigate();
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const inputRef = useRef(null);
@@ -227,6 +231,22 @@ const [cumulativeTarget, setCumulativeTarget] = useState('');
         document.body.removeChild(textarea);
       });
   };
+
+  // Debugging for /solo issue
+  console.log('[SpeedTestPage] Mounted');
+  useEffect(() => {
+    console.log('[SpeedTestPage] useEffect — target:', target);
+  }, [target]);
+  const location = useLocation();
+  console.log('[SpeedTestPage] Current route:', location.pathname);
+  useEffect(() => {
+    console.log('[SpeedTestPage] isComplete changed:', isComplete);
+  }, [isComplete]);
+
+
+  // End debugging
+
+
 
   // Load the page
   return (

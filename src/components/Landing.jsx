@@ -23,6 +23,7 @@ const Landing = () => {
   }, []);
 
   const handleSubmit = (e) => {
+    console.log('[Landing] handleSubmit triggered');
     e.preventDefault();
     if (localName.trim()) {
       localStorage.setItem('name', localName);
@@ -91,13 +92,15 @@ const Landing = () => {
           >
             🚀 Start Typing Adventure
           </button>
+          </form>
           <button
+            type="button"
             onClick={() => navigate('/speed')}
             className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
           >
             Time Trial ⚡
           </button>
-          </form>
+          
           {/*           <button
             onClick={() => onMultiplayerJoin()}
             className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"

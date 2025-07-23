@@ -72,5 +72,5 @@ export default function MultiplayerWrapper() {
   }
   console.log("🧭 Final isHostUser before render:", isHostUser);
 
-  return <MultiplayerRoom name={localName} onComplete={() => window.location.href = '/'} />;
+  return <MultiplayerRoom name={localName} onComplete={() => navigate('/')} />;
 }
