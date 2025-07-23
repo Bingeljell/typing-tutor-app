@@ -23,7 +23,6 @@ const Landing = () => {
   }, []);
 
   const handleSubmit = (e) => {
-    console.log('[Landing] handleSubmit triggered');
     e.preventDefault();
     if (localName.trim()) {
       localStorage.setItem('name', localName);
@@ -39,7 +38,8 @@ const Landing = () => {
     localStorage.setItem('name', nameToSave);
     if (setName) setName(nameToSave);
   };
-  
+  const [showFullInstructions, setShowFullInstructions] = useState(false);
+
 
   const {
     peerId,
@@ -96,7 +96,7 @@ const Landing = () => {
           <button
             type="button"
             onClick={() => navigate('/speed')}
-            className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
+            className="bg-gradient-to-r from-pink-500 m-4 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold"
           >
             Time Trial ⚡
           </button>
@@ -120,7 +120,56 @@ const Landing = () => {
           onIncomingConnection={handleMultiplayerJoin} // for the host
           />
           <HostMultiplayerListener />
-          <div className="bg-white/90 backdrop-blur-lg border border-yellow-300 rounded-2xl shadow-xl p-8 max-w-4xl mx-auto mt-8 text-left transition-transform hover:scale-[1.01]">
+          
+          {/* Instructions begin */}
+          <div className="bg-white/90 backdrop-blur-lg border border-yellow-300 rounded-2xl shadow-xl p-8 max-w-4xl mx-auto mt-8 text-left transition-transform hover:scale-[1.01] relative max-w-4xl">
+            <h3 className="sm:text-2xl font-bold text-purple-700 mb-4">👋 Welcome to the Typing Tutor!</h3>
+            <p className="text-gray-700 mb-4">Follow these quick tips to get started:</p>
+
+            <div
+              className={`transition-all duration-500 overflow-hidden ${
+                showFullInstructions ? 'max-h-[420px]' : 'max-h-20'
+              }`}
+            >
+              <ul className="list-disc pl-6 space-y-1 text-gray-700 text-base leading-relaxed">
+                <li>
+                  Choose a <strong>category</strong> you’d like to explore: classic literature, pop culture, science, and more!
+                </li>
+                <li>
+                  When you finish typing a sentence, just press <kbd>Enter</kbd> to jump to the next one.
+                </li>
+                <li>
+                  A <strong>Speed Test Feature</strong> is being worked upon — you can already challenge your friends.
+                </li>
+                <li>
+                  Focus on <strong>accuracy</strong> first, speed will follow naturally.
+                </li>
+                <li>
+                  The current teacher is lenient — you’ll see mistakes but won’t be penalized.
+                </li>
+                <li>
+                  Fun facts appear after each sentence — learn something new every time!
+                </li>
+              </ul>
+            </div>
+
+            {!showFullInstructions && (
+              <div className="absolute bottom-1 left-0 w-full h-14 bg-gradient-to-t from-white to-transparent pointer-events-none rounded-b-2xl" />
+            )}
+
+            <div
+              className="text-blue-600 underline hover:text-blue-800 text-sm text-right cursor-pointer"
+              onClick={() => setShowFullInstructions(!showFullInstructions)}
+            >
+              {showFullInstructions ? 'Show less ▲' : 'Read more... ▼'}
+            </div>
+          </div>
+
+
+
+
+
+{/*           <div className="bg-white/90 backdrop-blur-lg border border-yellow-300 rounded-2xl shadow-xl p-8 max-w-4xl mx-auto mt-8 text-left transition-transform hover:scale-[1.01]">
 
           <h3 className="sm:text-2xl font-bold text-purple-700 mb-4">👋 Welcome to the Typing Tutor!</h3>
           <p className="text-gray-700 mb-4">
@@ -146,8 +195,9 @@ const Landing = () => {
               Watch for fun facts after each sentence, you might learn something new!
             </li>
           </ul>
-        </div>
-
+        </div> */}
+        {/* Instructions end */}
+        
         {pendingConnection && (
           <HostMatchRequestModal
             peerName={pendingPeerName}
