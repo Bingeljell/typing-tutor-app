@@ -53,13 +53,13 @@ export default function MultiplayerWrapper() {
   
 
   useEffect(() => {
-    if (peerId && myName && peerReady) {
+    if (!isHostUser && peerId && myName && peerReady) {
       console.log("🧩 Peer attempting to connect to host with ID:", peerId);
       connectToPeer(peerId, () => {
         console.log("✅ Connected to host via URL");
       });
     }
-  }, [peerId, myName, peerReady]);
+  }, [isHostUser, peerId, myName, peerReady]);
 
   if (!isConnectionApproved) {
     return (
