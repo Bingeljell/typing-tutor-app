@@ -36,7 +36,7 @@ const Landing = () => {
       return;
     }
     localStorage.setItem('name', nameToSave);
-    if (setName) setName(nameToSave);
+    setMyName(nameToSave);
   };
   const [showFullInstructions, setShowFullInstructions] = useState(false);
 
@@ -46,7 +46,8 @@ const Landing = () => {
     pendingConnection,
     pendingPeerName,
     setPendingConnection,
-    setPendingPeerName
+    setPendingPeerName,
+    setMyName,
   } = useMultiplayer();
   
   const navigate = useNavigate();
