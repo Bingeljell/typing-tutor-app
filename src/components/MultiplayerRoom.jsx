@@ -297,7 +297,7 @@ const handleChange = (e) => {
         )}  
         {!ready && !gameStarted && (
           <button onClick={signalReady}
-          disabled={!target}
+          disabled={!target || !conn?.open}
           className={`px-4 py-2 mb-4 rounded font-bold text-white transition-all ${
             target ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
           }`}

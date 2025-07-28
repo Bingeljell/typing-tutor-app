@@ -40,14 +40,25 @@ export const MultiplayerProvider = ({ children }) => {
   const signalReady = () => {
     console.log("✅ signalReady() called — sending READY");
     setReady(true);
-    if (conn && conn.open) {
-      conn.send({ type: 'ready', name: myName }); // send name and ready
+  
+    if (conn?.open) {
       console.log("📣 signalReady() — conn is open, sending READY");
-      
+      conn.send({ type: 'ready', name: myName }); // Include name for readiness feedback
     } else {
       console.warn("❌ signalReady() — conn not open, cannot send");
+  
+      // Retry once after a short delay
+      const retryTimeout = setTimeout(() => {
+        if (conn?.open) {
+          console.log("🔁 Retry: conn opened, sending READY");
+          conn.send({ type: 'ready', name: myName });
+        } else {
+          console.error("⏱️ Retry failed: conn still not open.");
+        }
+      }, 1000);
     }
   };
+  
 
   const signalDone = (stats) => {
     setMyFinalStats(stats);
