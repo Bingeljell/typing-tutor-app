@@ -123,11 +123,24 @@ export const MultiplayerProvider = ({ children }) => {
       connection.on('open', () => {
         console.log("🚀 Host's incoming connection is now open");
         setConn(connection);
-        // 👇 TEMP test
-        setTimeout(() => {
-          console.log("🧪 Host sending handshake TEST message to peer...");
-          connection.send({ type: 'debug-test', msg: 'Hello from host' });
-        }, 1000);
+        const handleBeforeUnload = () => {
+          if (connection.open) {
+            connection.send({ type: 'cancel' });
+            connection.close();
+          }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+      });
+
+      connection.on('close', () => {
+        // Peer hung up
+        alert('Your opponent has disconnected.');
+      });
+      
+      connection.on('close', () => {
+        // Peer hung up or did unload
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        alert('Your opponent has disconnected.');
       });
   
       // ✅ Still listen for data even before open
@@ -173,6 +186,7 @@ export const MultiplayerProvider = ({ children }) => {
   
         } else if (data?.type === 'cancel') {
           setGameStarted(false);
+          alert('Your opponent has left the match.');
   
         } else {
           setOpponentProgress(data); // WPM, accuracy
@@ -209,6 +223,10 @@ export const MultiplayerProvider = ({ children }) => {
       connection.send({ type: 'name', value: myName });
       console.log("✅ Name message sent to host");
     });
+    connection.on('close', () => {
+      // Peer hung up
+      alert('Your opponent has disconnected.');
+    }); 
 
     connection.on('data', (data) => {
       if (data?.type === 'ready') {
@@ -247,6 +265,7 @@ export const MultiplayerProvider = ({ children }) => {
         }
       } else if (data?.type === 'cancel') {
         setGameStarted(false);
+        alert('Your opponent has left the match.');
       } else {
         setOpponentProgress(data);
       }
