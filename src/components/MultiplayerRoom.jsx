@@ -37,11 +37,6 @@ const MultiplayerRoom = ({ onComplete, name }) => {
     isHostUser
     
   } = useMultiplayer();
-  console.log("🎯 gameOver:", gameOver);
-  console.log("👤 opponentProgress:", opponentProgress);
-  console.log("🏆 youWon:", youWon);
-  console.log("🎯 myFinalStats:", myFinalStats);
-  console.log("🎯 opponentFinalStats:", opponentFinalStats);
   
   const normalize = (str) =>
     str.replace(/['’‘]/g, "'").replace(/["”“]/g, '"');
@@ -161,7 +156,6 @@ const handleChange = (e) => {
   // Final stats for both peer / host
   useEffect(() => {
     if (myFinalStats && opponentFinalStats && !gameOver) {
-      console.log('🎯 Running decideWinner from useEffect');
       decideWinner(myFinalStats, opponentFinalStats);
       setGameOver(true);
     }
@@ -170,26 +164,12 @@ const handleChange = (e) => {
   // Sync target from host
   useEffect(() => {
     if (multiplayerTarget) {
-      console.log("🧩 Applying target to local state:", multiplayerTarget);
       setTarget(multiplayerTarget);
     }
   }, [multiplayerTarget]);
 
   useEffect(() => {
-    console.log("🔍 useEffect running with values:", {
-      isHost,
-      connExists: !!conn,
-      connOpen: conn?.open,
-      multiplayerTarget,
-      multiplayerMeta,
-    });
-
     if (isHost && conn?.open && multiplayerTarget && multiplayerMeta) {
-      console.log("📤 Host useEffect sending target to peer", {
-        text: multiplayerTarget,
-        ...multiplayerMeta,
-      });
-  
       conn.send({
         type: 'target',
         value: {
@@ -203,9 +183,7 @@ const handleChange = (e) => {
 
   // Multiplayer countdown feature
   useEffect(() => {
-      console.log("🔄 Ready States", { ready, opponentReady, gameStarted });
       if (ready && opponentReady && !gameStarted) {
-        console.log("🎬 Both ready — starting countdown...");
         setBothReady(true);
         setTimeout(() => {
           setGameStarted(true);
@@ -213,16 +191,13 @@ const handleChange = (e) => {
       }
     }, [ready, opponentReady]);
 
-  console.log("🔍 multiplayer state:", {
+/*   console.log("🔍 multiplayer state:", {
     ready,
     opponentReady,
     gameStarted,
     connOpen: conn?.open,
-  });
+  }); */
   
-  useEffect(() => {
-    console.log("🧭 Role:", isHost ? "Host" : "Peer");
-  }, []);
 
   // Load the page
   return (
@@ -233,7 +208,7 @@ const handleChange = (e) => {
       transition={{ duration: 0.5 }}
     >
       <div className="w-full max-w-5xl bg-white/90 backdrop-blur-lg border rounded-xl shadow p-8 text-center">
-        <h1 className="text-3xl font-bold text-purple-700 mb-4">⚡ Time Trial ⚡</h1>
+        <h1 className="text-3xl font-bold text-purple-700 mb-4">⚡ Multiplayer Room - Let's go! ⚡</h1>
         <div className="flex flex-col items-center justify-center gap-2 mb-6">
 
           {/* Author Dropdown */}
@@ -343,7 +318,7 @@ const handleChange = (e) => {
               Starting in 3... 2... 1...
             </div>
           )}
-        {console.log("🟡 opponentProgress", opponentProgress)}
+        {/* {console.log("🟡 opponentProgress", opponentProgress)} */}
         {opponentProgress && (
           <div className="mt-4 text-sm text-gray-600">
             <p>👤 Opponent progress:</p>

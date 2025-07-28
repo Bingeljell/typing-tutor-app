@@ -70,7 +70,6 @@ export default function MultiplayerWrapper() {
       />
     );
   }
-  console.log("🧭 Final isHostUser before render:", isHostUser);
 
   return <MultiplayerRoom name={localName} onComplete={() => navigate('/')} />;
 }

@@ -200,9 +200,8 @@ export const MultiplayerProvider = ({ children }) => {
     });
 
     connection.on('data', (data) => {
-      console.log("📩 Peer received data:", data);
       if (data?.type === 'ready') {
-        console.log("✅ Peer received 'ready' from host");
+        /* console.log("✅ Peer received 'ready' from host"); */
         setOpponentReady(true);
         if (data.name) {
           setOpponentName(data.name);
@@ -223,7 +222,7 @@ export const MultiplayerProvider = ({ children }) => {
       }
       
       else if (data?.type === 'target') {
-        console.log ("🎯 Received target sync from host");
+        /* console.log ("🎯 Received target sync from host"); */
         setMultiplayerTarget(data.value.text);
         setMultiplayerMeta({ author: data.value.author, label: data.value.label });
       } else if (data?.type === 'done') {
@@ -255,7 +254,6 @@ export const MultiplayerProvider = ({ children }) => {
 
   useEffect(() => {
     if (myFinalStats && opponentFinalStats && !gameOver) {
-      console.log('🎯 Running decideWinner from useEffect');
       decideWinner(myFinalStats, opponentFinalStats);
       setGameOver(true);
     }

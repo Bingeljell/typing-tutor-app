@@ -4,9 +4,20 @@ export const multiplayerPassages = {
     swift: {
       title: 'Taylor Swift',
       contents: {
-        'placeholder': {
-          label: 'All Too Well (Placeholder)',
-          text: `This is a placeholder for Taylor Swift lyrics. Replace with the actual song text once you have usage rights.`,
+        'So Long London': {
+          label: 'So Long London',
+          text: `I saw in my mind fairy lights through the mist
+          I kept calm and carried the weight of the rift
+          Pulled him in tighter each time he was driftin' away
+          My spine split from carrying us up the hill
+          Wet through my clothes, weary bones caught the chill
+          I stopped tryna make him laugh, stopped tryna drill the safe
+          
+          Thinkin', "How much sad did you think I had
+          Did you think I had in me?"
+          Oh, the tragedy
+          So long, London
+          You'll find someone`,
         },
       },
     },
@@ -44,7 +55,7 @@ export const multiplayerPassages = {
       contents: {
         'short-test': {
           label: 'Short Test Sentence',
-          text: `This is a short test passage for development purposes.`,
+          text: `Use this short test to ensure that Multiplayer is working.`,
         },
       },
     },
