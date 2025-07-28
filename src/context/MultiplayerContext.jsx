@@ -131,11 +131,6 @@ export const MultiplayerProvider = ({ children }) => {
         };
         window.addEventListener('beforeunload', handleBeforeUnload);
       });
-
-      connection.on('close', () => {
-        // Peer hung up
-        alert('Your opponent has disconnected.');
-      });
       
       connection.on('close', () => {
         // Peer hung up or did unload
