@@ -117,6 +117,7 @@ const Landing = () => {
             💬 Feature Request / Give Feedback
           </a>
           <MultiplayerPanel 
+          disabled={!localName.trim()}
           onConnected={handleMultiplayerJoin} // for the player
           onIncomingConnection={handleMultiplayerJoin} // for the host
           />

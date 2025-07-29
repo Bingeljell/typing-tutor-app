@@ -6,15 +6,10 @@ export const multiplayerPassages = {
       contents: {
         'So Long London': {
           label: 'So Long London',
-          text: `I saw in my mind fairy lights through the mist
-          I kept calm and carried the weight of the rift
-          Pulled him in tighter each time he was driftin' away
-          My spine split from carrying us up the hill
-          Wet through my clothes, weary bones caught the chill
-          I stopped tryna make him laugh, stopped tryna drill the safe
-          
-          Thinkin', "How much sad did you think I had
-          Did you think I had in me?"
+          text: `I saw in my mind fairy lights through the mist. I kept calm and carried the weight of the rift. Pulled him in tighter each time he was driftin' away
+          My spine split from carrying us up the hill Wet through my clothes, weary bones caught the chill. I stopped tryna make him laugh, stopped tryna drill the safe
+          Thinkin', "How much sad did you think I had? Did you think I had in me?"
+
           Oh, the tragedy
           So long, London
           You'll find someone`,

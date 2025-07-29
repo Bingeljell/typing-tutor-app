@@ -42,6 +42,8 @@ const MultiplayerRoom = ({ onComplete, name }) => {
     str.replace(/['’‘]/g, "'").replace(/["”“]/g, '"');
   
   const { readyNotification } = useMultiplayer();
+  const containerRef = useRef(null);
+  const innerTextRef = useRef(null);
   
   
   const [target, setTarget] = useState(`When you have eliminated the impossible, whatever remains, however improbable, must be the truth.`);
@@ -193,6 +195,19 @@ const handleChange = (e) => {
     }, [ready, opponentReady]);
 
 
+  useEffect(() => {
+    const container = containerRef.current;
+    const inner = innerTextRef.current;
+    
+    if (container && inner) {
+      const maxScroll = inner.offsetHeight - container.offsetHeight;
+    
+      // Only scroll if we’re typing beyond the visible area
+      if (maxScroll > 0) {
+        container.scrollTop = maxScroll;
+      }
+    }
+  }, [input]);
   // Load the page
   return (
     <motion.div
@@ -275,8 +290,6 @@ const handleChange = (e) => {
 
         </div>
 
-
-
         <p className="mb-2 text-gray-700 font-semibold">Welcome, {name}!</p>
         {/* 🧠 Show selected passage info to both users */}
         {multiplayerMeta && (
@@ -286,14 +299,15 @@ const handleChange = (e) => {
           </div>
         )}
         <p className="mb-4 text-gray-600">Type the sentence below as fast and accurately as you can:</p>
-        <div className="relative overflow-hidden min-h-[200px] w-full h-24 bg-gray-100 rounded mb-4 border max-w-5xl">
+        <div className="relative overflow-y-auto min-h-[250px] w-full h-24 bg-gray-100 rounded mb-4 border max-w-5xl">
           <div
             className="absolute whitespace-pre-wrap transition-transform"
-            style={{ transform: `translateY(-${input.length * 0.1}px)` }} // Vertical scroll and speed control
+            style={{ transform: `translateY(-${input.length * 0.15}px)` }} // Vertical scroll and speed control
           >
             {renderText()}
           </div>
         </div>
+
         {readyNotification && (
           <div className="text-blue-700 font-semibold mb-2">
             {readyNotification}
@@ -315,7 +329,7 @@ const handleChange = (e) => {
           onChange={handleChange}
           
           disabled={!gameStarted || isComplete}
-          className="w-full border p-2 rounded mb-4"
+          className="w-full border-purple-600 p-2 rounded mb-4"
         />
         {bothReady && !gameStarted && (
             <div className="text-center text-red-500 text-xl font-bold my-4 animate-pulse"> // This is the count down for live match

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMultiplayer } from '../context/MultiplayerContext';
 
-export default function MultiplayerPanel({ onConnected, onIncomingConnection }) {
+export default function MultiplayerPanel({ onConnected, onIncomingConnection, disabled }) {
   const {
     peerId,
     remotePeerId,
@@ -38,6 +38,10 @@ export default function MultiplayerPanel({ onConnected, onIncomingConnection }) 
           <button
             className="text-blue-500 text-xs ml-2"
             onClick={() => {
+              if (disabled) {
+                alert('Please enter your name before proceeding');
+                return;
+              }
               const link = `${window.location.origin}/multiplayer/${peerId}`;
               navigator.clipboard.writeText(link);
               setCopied(true);
