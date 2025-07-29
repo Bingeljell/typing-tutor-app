@@ -34,8 +34,8 @@ const MultiplayerRoom = ({ onComplete, name }) => {
     setMultiplayerTarget,
     multiplayerMeta,
     setMultiplayerMeta,
-    isHostUser
-    
+    isHostUser,
+    isConnected
   } = useMultiplayer();
   
   const normalize = (str) =>
@@ -192,13 +192,6 @@ const handleChange = (e) => {
       }
     }, [ready, opponentReady]);
 
-/*   console.log("🔍 multiplayer state:", {
-    ready,
-    opponentReady,
-    gameStarted,
-    connOpen: conn?.open,
-  }); */
-  
 
   // Load the page
   return (
@@ -211,7 +204,10 @@ const handleChange = (e) => {
       <div className="w-full max-w-5xl bg-white/90 backdrop-blur-lg border rounded-xl shadow p-8 text-center">
         <h1 className="text-3xl font-bold text-purple-700 mb-4">⚡ Multiplayer Room - Let's go! ⚡</h1>
         <div className="flex flex-col items-center justify-center gap-2 mb-6">
-
+        {/* Enable passage selection only for host */}
+        {isHostUser 
+        ? (
+          <>
           {/* Author Dropdown */}
           <select
             value={selectedAuthor}
@@ -257,6 +253,13 @@ const handleChange = (e) => {
                 <option key={id} value={id}>{label}</option>
               ))}
           </select>
+          </>
+        ) : (
+          <p className="italic text-gray-500">
+            Waiting for the host to pick a passage…
+          </p>  
+        )}
+
           {!isHost && (
             <div className="text-xs text-gray-500 italic mt-1">
               👀 The host will pick the passage.
@@ -264,7 +267,7 @@ const handleChange = (e) => {
           )}  
 
           {/* Hint if author is not selected */}
-          {!selectedAuthor && (
+          {isHost && !selectedAuthor && (
             <div className="text-xs text-gray-500 mt-1">
               👆 Please select an author first to see available passages.
             </div>
@@ -343,6 +346,11 @@ const handleChange = (e) => {
         >
           Back to Main
         </button>
+        <div className="connection-status">
+          {isConnected
+            ? <span className="text-green-600">🟢 Connected</span>
+            : <span className="text-red-600">🔴 Disconnected</span>}
+        </div>  
         {isComplete && (
           <div className="mt-4 mb-4">
             <p className="text-green-700 font-bold">✅ Sweet, you're done!</p>

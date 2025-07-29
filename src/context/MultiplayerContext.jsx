@@ -30,7 +30,9 @@ export const MultiplayerProvider = ({ children }) => {
   const [multiplayerMeta, setMultiplayerMeta] = useState(null); // title + label
   const [isHostUser, setIsHostUser] = useState(false);
 
-
+  const [isConnected, setIsConnected] = useState(false);
+  const connectOnceRef = useRef(false);      // guards connectToPeer
+  const alertOnceRef   = useRef(false);      // guards disconnect alert 
 
   const registerOnIncomingConnection = (callback) => {
     console.log("📡 Host registered onIncomingConnection callback");
@@ -106,6 +108,7 @@ export const MultiplayerProvider = ({ children }) => {
     setOpponentProgress(null);
   };
 
+  // managing the host connection logic
   useEffect(() => {
     const newPeer = new Peer();
   
@@ -119,23 +122,30 @@ export const MultiplayerProvider = ({ children }) => {
     newPeer.on('connection', (connection) => {
       console.log("✅ Host received an incoming connection from", connection.peer);
   
+      // 🆕 define unload handler in outer scope so both callbacks can see it
+      const handleBeforeUnload = () => {
+        if (connection.open) {
+          connection.send({ type: 'cancel' });
+          connection.close();
+          }
+      };
       // ✅ Delay assigning conn until connection is actually open
       connection.on('open', () => {
-        console.log("🚀 Host's incoming connection is now open");
         setConn(connection);
-        const handleBeforeUnload = () => {
-          if (connection.open) {
-            connection.send({ type: 'cancel' });
-            connection.close();
-          }
-        };
+        setIsConnected(true);
+        console.log("🚀 Host's incoming connection is now open");
         window.addEventListener('beforeunload', handleBeforeUnload);
       });
-      
+
       connection.on('close', () => {
+        setIsConnected(false);
         // Peer hung up or did unload
         window.removeEventListener('beforeunload', handleBeforeUnload);
-        alert('Your opponent has disconnected.');
+        if (!alertOnceRef.current) {
+          alertOnceRef.current = true;
+          alert('Your opponent has disconnected.');
+        }
+        console.warn("🔌 Connection closed by peer");
       });
   
       // ✅ Still listen for data even before open
@@ -181,7 +191,10 @@ export const MultiplayerProvider = ({ children }) => {
   
         } else if (data?.type === 'cancel') {
           setGameStarted(false);
-          alert('Your opponent has left the match.');
+          if (!alertOnceRef.current) {
+            alertOnceRef.current = true;
+            alert('Your opponent has left the match.');
+          }
   
         } else {
           setOpponentProgress(data); // WPM, accuracy
@@ -199,29 +212,46 @@ export const MultiplayerProvider = ({ children }) => {
       newPeer.destroy();
     };
   }, []);
-  
 
+// Managing the peer connection logic
   const connectToPeer = (id, onConnected) => {
     if (!peer) {
       console.warn("❌ PeerJS instance not ready yet");
       return;
     }
+    // only attempt to connect one time
+    if (connectOnceRef.current) return;
+    connectOnceRef.current = true;
 
-    console.log('🧩 connectToPeer called with ID:', id);
+    console.log("🧩 Peer connecting once to host:", id);
     const connection = peer.connect(id);
 
+
+    // 🆕 define unload handler once so we can register & remove it
+    const handlePeerBeforeUnload = () => {
+      if (connection.open) {
+        // send cancel to the host before we go
+        connection.send({ type: 'cancel' });
+        connection.close();
+      }
+    };
+
     connection.on('open', () => {
-      console.log("✅ Connection opened with host:", id);
+      // 🆕 mark the link as live
+      setIsConnected(true);
       setConn(connection);
-      if (onConnected) onConnected();
+      console.log("✅ Connection opened with host:", id);
+
+      // 🆕 register unload so host sees our departure
+      window.addEventListener('beforeunload', handlePeerBeforeUnload);
+
+      // 🆕 send your name exactly once - this was becoming an issue :/ 
       console.log("🎯 Peer is sending name to host:", myName);
       connection.send({ type: 'name', value: myName });
       console.log("✅ Name message sent to host");
+      // fire the callback after you’ve sent your name
+      if (onConnected) onConnected();
     });
-    connection.on('close', () => {
-      // Peer hung up
-      alert('Your opponent has disconnected.');
-    }); 
 
     connection.on('data', (data) => {
       if (data?.type === 'ready') {
@@ -265,13 +295,23 @@ export const MultiplayerProvider = ({ children }) => {
         setOpponentProgress(data);
       }
     });
+    connection.on('close', () => {
+      // 🆕 mark disconnected
+      setIsConnected(false);
+      
+      // 🆕 clean up unload handler so we don't leak listeners
+      window.removeEventListener('beforeunload', handlePeerBeforeUnload);
+
+      // 🆕 alert just once
+      if (!alertOnceRef.current) {
+        alertOnceRef.current = true;
+        alert('Your opponent has disconnected.');
+      }
+      console.warn("🔌 Connection closed by host");
+    });
 
     connection.on('error', (err) => {
       console.error("❌ Error during connection:", err);
-    });
-
-    connection.on('close', () => {
-      console.warn("🔌 Connection closed by host");
     });
 
     return connection;
@@ -329,7 +369,8 @@ export const MultiplayerProvider = ({ children }) => {
         setMultiplayerMeta,
         isHostUser,
         setIsHostUser,
-        
+        isConnected,
+        setIsConnected,
       }}
     >
       {children}
