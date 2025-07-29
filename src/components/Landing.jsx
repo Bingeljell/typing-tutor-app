@@ -81,7 +81,7 @@ const Landing = () => {
           />
           <button
             type="submit"
-            /* onClick={() => navigate('/solo')} */
+            disabled= {!localName.trim()}
             onClick={(e) => {
               e.preventDefault();
               if (localName.trim()) {
@@ -89,7 +89,7 @@ const Landing = () => {
                 navigate('/solo');
               }
             }}
-            className="bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg"
+            className={`bg-gradient-to-r from-pink-500 via-purple-600 to-yellow-400 text-white px-8 py-3 rounded-full shadow-md hover:brightness-105 transition-all duration-300 font-semibold text-lg ${!localName.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             🚀 Start Typing Adventure
           </button>

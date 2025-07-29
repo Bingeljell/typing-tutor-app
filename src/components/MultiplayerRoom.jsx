@@ -40,8 +40,9 @@ const MultiplayerRoom = ({ onComplete, name }) => {
   
   const normalize = (str) =>
     str.replace(/['’‘]/g, "'").replace(/["”“]/g, '"');
+  
   const { readyNotification } = useMultiplayer();
-
+  
   
   const [target, setTarget] = useState(`When you have eliminated the impossible, whatever remains, however improbable, must be the truth.`);
   const [selectedAuthor, setSelectedAuthor] = useState('');
@@ -344,8 +345,8 @@ const handleChange = (e) => {
         </button>
         {isComplete && (
           <div className="mt-4 mb-4">
-            <p className="text-green-700 font-bold">✅ Time Trial Complete!</p>
-            <p className="text-gray-600">Challenge your friends to a Type-off!</p>
+            <p className="text-green-700 font-bold">✅ Sweet, you're done!</p>
+           {/*  <p className="text-gray-600">Challenge your friends to a Type-off!</p> */}
             <div className="flex justify-center gap-4 mt-4">
               <div className="bg-purple-100 border border-purple-300 rounded-lg p-4 shadow w-32">
                 <div className="text-sm text-purple-700">Accuracy</div>

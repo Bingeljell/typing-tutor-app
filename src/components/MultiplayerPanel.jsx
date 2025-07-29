@@ -49,26 +49,6 @@ export default function MultiplayerPanel({ onConnected, onIncomingConnection }) 
           </button>
         </div>
       </div>
-
-      {/* <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Enter friend's code"
-          value={remotePeerId}
-          onChange={(e) => setRemotePeerId(e.target.value)}
-          className="border px-2 py-1 rounded w-full text-sm"
-        />
-        <button
-          onClick={() => {
-            setTimeout(() => {
-              connectToPeer(remotePeerId, onConnected);
-            }, 500);
-          }}
-          className="bg-blue-500 text-white px-4 py-1 mt-2 rounded text-sm hover:bg-blue-600"
-        >
-          Join Game
-        </button>
-      </div> */}
     </div>
   );
 }
