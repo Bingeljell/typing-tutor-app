@@ -329,7 +329,8 @@ const handleChange = (e) => {
           onChange={handleChange}
           
           disabled={!gameStarted || isComplete}
-          className="w-full border-purple-600 p-2 rounded mb-4"
+          className={`w-full p-3 mb-4 bg-green-500 rounded border-2 outline-none shadow focus:ring-2 focus:ring-purple-500 bg-white text-gray-800 ${
+  gameStarted ? 'border-gray-500' : 'border-yellow-400 bg-yellow-50 text-gray-700'}`}
         />
         {bothReady && !gameStarted && (
             <div className="text-center text-red-500 text-xl font-bold my-4 animate-pulse"> // This is the count down for live match
