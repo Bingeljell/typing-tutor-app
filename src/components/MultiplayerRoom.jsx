@@ -302,7 +302,7 @@ const handleChange = (e) => {
         <div className="relative overflow-y-auto min-h-[250px] w-full h-24 bg-gray-100 rounded mb-4 border max-w-5xl">
           <div
             className="absolute whitespace-pre-wrap transition-transform"
-            style={{ transform: `translateY(-${input.length * 0.15}px)` }} // Vertical scroll and speed control
+            style={{ transform: `translateY(-${input.length * 0.1}px)` }} // Vertical scroll and speed control
           >
             {renderText()}
           </div>

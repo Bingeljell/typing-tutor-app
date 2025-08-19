@@ -6,7 +6,7 @@ export const multiplayerPassages = {
       contents: {
         'So Long London': {
           label: 'So Long London',
-          text: `I saw in my mind fairy lights through the mist. I kept calm and carried the weight of the rift. Pulled him in tighter each time he was driftin' away
+          text: `I saw in my mind fairy lights through the mist. I kept calm and carried the weight of the rift. Pulled him in tighter each time he was driftin' away.
           My spine split from carrying us up the hill Wet through my clothes, weary bones caught the chill. I stopped tryna make him laugh, stopped tryna drill the safe
           Thinkin', "How much sad did you think I had? Did you think I had in me?"
 
@@ -22,12 +22,12 @@ export const multiplayerPassages = {
         'hamlet-soliloquy': {
           label: 'Hamlet - To Be or Not To Be',
           text: `To be, or not to be, that is the question: Whether 'tis nobler in the mind to suffer 
-          The slings and arrows of outrageous fortune, Or to take arms against a sea of troubles 
-          And by opposing end them. To die—to sleep, No more; and by a sleep to say we end 
+          The slings and arrows of outrageous fortune, Or to take arms against a sea of troubles. 
+          And by opposing end them. To die-to sleep, No more; and by a sleep to say we end. 
           The heart-ache and the thousand natural shocks That flesh is heir to: 'tis a consummation 
           Devoutly to be wish'd. To die, to sleep; To sleep, perchance to dream—ay, there's the rub: 
           For in that sleep of death what dreams may come, When we have shuffled off this mortal coil, 
-          Must give us pause—there's the respect That makes calamity of so long life.`,
+          Must give us pause-there's the respect That makes calamity of so long life.`,
         },
       },
     },
