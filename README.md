@@ -1,37 +1,69 @@
-# React + Vite
+# ⌨️ Typing Tutor App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fun and interactive typing tutor built with **React + Vite**.  
+Designed for kids and adults to improve typing speed and accuracy through engaging exercises, factoids, and game modes.  
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+### 🔤 Core Typing
+- Real-time feedback (green = correct, red = incorrect, yellow = extra, gray = pending):contentReference[oaicite:0]{index=0}  
+- Press `Enter` to move to the next exercise:contentReference[oaicite:1]{index=1}  
+- Auto-focus on typing input when exercise starts  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 📚 Modes & Content
+- Multiple content sets: **Classic, Pop, News, STEM**:contentReference[oaicite:2]{index=2}  
+- Level + Part structure with progress HUD and trackers:contentReference[oaicite:3]{index=3}  
+- Trivia factoids displayed after each completed exercise:contentReference[oaicite:4]{index=4}  
 
-## Project Structure & Deployment Checklist
+### 📈 Stats & Tracking
+- Live **WPM** and **accuracy** (with fuzzy word matching logic):contentReference[oaicite:5]{index=5}  
+- Sentence progress bar + per-level dot tracker:contentReference[oaicite:6]{index=6}  
+- Elapsed time timer per exercise:contentReference[oaicite:7]{index=7}  
 
-✅ Project files are in repo root (src/, public/, package.json, vite.config.js).  
-✅ No nested project folders (avoid typing-tutor-app/typing-tutor-app).  
-✅ src/ folder only contains source files → no node_modules/dist here.
+### 🎮 Game Modes
+- **Time Trial Mode** for quick practice:contentReference[oaicite:8]{index=8}  
+- **Multiplayer Race (in progress)** – real-time P2P typing races using WebRTC / PeerJS:contentReference[oaicite:9]{index=9}  
 
-✅ .gitignore excludes dist/ and node_modules/ (build artifacts).  
-✅ All source files (components, utils, data) are committed (check with `git status` and `git ls-files`).
+### 🧠 Extras
+- Smart handling of curly quotes and safe input checks:contentReference[oaicite:10]{index=10}  
+- Restart & Next Exercise buttons (keyboard-friendly):contentReference[oaicite:11]{index=11}  
+- Clean **TailwindCSS**-based UI:contentReference[oaicite:12]{index=12}  
 
-✅ File names are **consistent and lowercase** where possible (avoid case mismatches).  
-✅ Imports match file names exactly → case matters on Netlify (Linux servers).
+---
 
-✅ Netlify build settings:
-- Build command → `npm run build`
-- Publish directory → `dist`
+## 🛠 Tech Stack
 
-✅ Netlify deploy log shows:
-- Build succeeded
-- Site URL working → test it!
+- **Frontend**: React + Vite:contentReference[oaicite:13]{index=13}  
+- **Styling**: TailwindCSS:contentReference[oaicite:14]{index=14}  
+- **Logic**: Custom typing engine with fuzzy accuracy + WPM calculation:contentReference[oaicite:15]{index=15}  
+- **Multiplayer**: Peer-to-Peer (WebRTC/PeerJS) [in progress]:contentReference[oaicite:16]{index=16}  
+- **Deployment**: Netlify (auto-deploy from GitHub):contentReference[oaicite:17]{index=17}  
 
-✅ Before each push:
-- Run `git status` to confirm clean
-- Run `npm run dev` to confirm local works
-- Push to GitHub → Netlify auto-deploys
+---
+
+## 🚀 Roadmap
+- ✅ Time Trial Mode  
+- ✅ Shareable scores via link  
+- 🚧 Multiplayer race mode with live opponent stats  
+- 🚧 Leaderboards (Firebase or mock JSON)  
+- 🎵 Optional sound effects & richer factoids  
+- 📊 Teacher/Parent dashboards (future):contentReference[oaicite:18]{index=18}  
+
+---
+
+## 📦 Getting Started
+
+```bash
+# Clone repo
+git clone https://github.com/your-username/typing-tutor-app
+
+# Install dependencies
+npm install
+
+# Run locally
+npm run dev
+
+# Build for production
+npm run build
